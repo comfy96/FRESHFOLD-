@@ -18,3 +18,4 @@ While walking through `README.md` Section 4 ("Getting started") as a new maintai
   > `"<Paste exact quote of what confused or blocked them while following README.md from a fresh clone>"`
 - **Fix Applied to `README.md` After Their Feedback:**
   - `<Describe exact line/command updated in README.md to resolve their blocker>`
+
