@@ -1,6 +1,6 @@
 # Fresh Fold Laundry
 
-*(Repository Layout: Single monorepo containing all five sequential assessment folders `task-01-*` through `task-05-*` alongside the active application source under `src/`.)*
+*(Repository Layout: Single monorepo containing all five sequential assessment folders `task-01-*` through `task-05-*` alongside the active Next.js application under `src/`.)*
 
 ---
 
@@ -10,51 +10,61 @@ Fresh Fold Laundry is a lightweight customer record portal that gives Nigerian n
 ---
 
 ## 2. Status
-- **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static Customer Order Status screen (`src/index.html`, `src/styles/app.css`), all Task 01 written reasoning, defects, interview answers, headless Chrome screen captures (`09`–`11`), and unmerged regression branch proof (`12`).
-- **Not started:**
-  - `task-02-repository-and-scaffold/`: Backend/framework scaffold, live database persistence, and Git workflow testing.
-  - `task-03-client-validation/`: Single-page authentication form, client-side validation rules, and screen-reader accessibility fixes.
-  - `task-04-server-security/`: Database schema migrations, Argon2id/bcrypt hashing, boundary validation, rate limiting, and async email OTP verification.
-  - `task-05-sessions-compliance-defence/`: Session lifecycle, GDPR/NDPA deletion job, retention matrix, primary shop-owner interview, and technical handbook.
+- **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static order screen (`src/index.html`), and all Task 01 docs and browser captures (`01`–`12`).
+- **Finished (Task 02 Code, Diagnostics & Docs):** Phased Next.js 15 + TypeScript scaffold without Tailwind, SQLite persistence (`POST /api/pickup-requests` returning HTTP `201`, `/pickup`, `/orders`), cold/warm load benchmarks (`1,414 ms` $\rightarrow$ `13 ms`), 3 server breakages and recoveries (`05`–`10`), false-success investigation (`11`–`13`), information design (`16`–`20`), and all written docs (`model-choices.md`, `performance-note.md`, `false-success.md`, `working-tree.md`, `information-design.md`, `defects.md`, `interview-answers.md`).
+- **Pending Human Actions (Task 02):**
+  - `task-02-repository-and-scaffold/evidence/14-working-tree-drawing.jpg`: Hand-drawn & dated working tree photo.
+  - `task-02-repository-and-scaffold/docs/readme-test.md`: Verbatim onboarding test run by an unfamiliar person.
+  - `task-02-repository-and-scaffold/evidence/15-git-log-graph.txt` & PR URL: Push `feat/information-design` to GitHub, open & merge PR against `main`, then create & delete a rejected second branch.
+- **Not started:** `task-03-client-validation/`, `task-04-server-security/`, `task-05-sessions-compliance-defence/`.
+
+*(Task 02 Pull Request URL: `<pending GitHub PR creation for feat/information-design -> main>`)*
 
 ---
 
 ## 3. The stack, with reasons
-- **Static HTML5 & Semantic CSS Custom Properties (Task 01 UI Layer):** Chosen over Tailwind CSS or React in Task 01 because Amaka Obi uses an entry-level Android phone on a small weekly data bundle, and zero-runtime CSS variables enforce strict token separation without shipping kilobytes of utility JavaScript.
-- **Node.js (v26.13.0) Build Tooling:** Chosen over Python or Sass CLI for compiling Figma JSON tokens into CSS variables (`build-tokens.js`) so token compilation shares the same JavaScript runtime that will power the full-stack server in Tasks 02–05.
-- **Figma Variables & W3C JSON Token Format:** Chosen over hardcoded CSS color sheets because Light and Dark Mode Variable collections preserve semantic alias relationships between brand primitives (`#007B71`) and UI roles across design and code.
+- **Next.js 15 (App Router) + TypeScript:** Chosen over a static HTML live server or single-file Express script because it provides dynamic server API routes (`/api/pickup-requests`), server-side database rendering (`/orders`), and built-in `<head>` metadata templates from one cohesive codebase.
+- **CSS Modules + Semantic CSS Variables (`src/styles/variables.css`, zero Tailwind):** Chosen over Tailwind CSS to enforce strict two-tier Figma token consumption (`--color-*`, `--type-*`, `--shadow-*`) and avoid utility-class bloat on Amaka Obi's low-cost Android device.
+- **Node.js v26.13.0 Built-in SQLite (`node:sqlite` `DatabaseSync`):** Chosen over heavier Postgres/Docker setups in Task 02 so any maintainer can clone, run `npm install`, and inspect real persisted rows with zero external database daemons.
 
 ---
 
 ## 4. Getting started
-Run these commands in exact order from a fresh clone to compile the design tokens and view the current Task 01 screen locally:
+Run these exact commands in order from a fresh clone:
 
 ```bash
 git clone https://github.com/comfy96/FRESHFOLD-.git
 cd FRESHFOLD-
-node task-01-design-system/scripts/build-tokens.js
-npx serve src
+npm install
+cp .env.example .env
 ```
 
-*(Note: Once `npx serve src` starts, open the printed `http://localhost:<port>` URL in your browser. If running offline without `npx`, open `src/index.html` directly in Chrome or Safari.)*
+Open `.env` and set `DATABASE_URL` to a local SQLite path (for example `./freshfold.db`), then start the development server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser. Visit `/pickup` to record a laundry pickup request and `/orders` to view logged shop records.
 
 ---
 
 ## 5. Environment variables
-No environment variables are required yet for Task 01 (static design system and token compiler). Database, SMTP, and session secrets will be introduced starting in Task 02 and Task 04 and documented here by name and purpose only.
+- `DATABASE_URL`: File path to the local SQLite database read by `src/lib/db.ts` (never commit `.env` or set values here).
+- `NEXT_PUBLIC_SITE_URL` *(optional)*: Base origin URL used by Next.js `metadataBase` in `src/app/layout.tsx` when resolving Open Graph preview images (defaults locally to `http://localhost:3000`).
 
 ---
 
 ## 6. What this deliberately does not do
-- **No AI chatbot interface:** Customers anxious about missing clothes or unrecorded cash transfers distrust opaque chat bots; the interface deliberately renders calm, static dated ledger tables ("Our records show") instead of conversational UI.
-- **No live backend or authentication yet:** Task 01 deliberately isolates and proves design-system consumption on a static order ledger screen before introducing dynamic server routing (Task 02), registration forms (Task 03), or database persistence (Task 04).
-- **No live online payment gateway integration yet:** The shop takes cash and bank transfers recorded manually by staff (`Musa`, `Chidi`, `Tunde`), so checkout card processing is out of scope.
+- **No AI chatbot interface:** Customers anxious about missing garments or unrecorded transfers distrust opaque bots; the portal shows dated ledger records ("Our records show") instead.
+- **No login/session gating or user scoping yet:** Authentication and single-customer row isolation are deliberately deferred until Tasks 03–05 so Task 02 stays focused on scaffolding, persistence verification, and diagnostics.
+- **No schema migration runner yet:** `node:sqlite` creates the initial `pickup_requests` table on connection; full forward-only ORM migrations are introduced in Task 04.
 
 ---
 
 ## 7. Known defects
-1. **Light Mode `Surface_Container_Lowest` mapped to dark `Neutral_20` (`task-01-design-system/docs/design-system/Color Roles.Light Mode.tokens.json:98-101`, `src/styles/variables.css:157`):** Produces a `1.31 : 1` contrast failure against `On_Surface`; cards are temporarily routed to `--color-surface-container-low`.
-2. **Error tones 60–99 exported as pure white (`task-01-design-system/evidence/06-tokens-complete.json:1297-1370`):** Breaks Light Mode `Error_Container` surface tint and Dark Mode `Error` legibility.
-3. **Unexported typography & stale shadow tint (`task-01-design-system/evidence/06-tokens-complete.json:1-21`, `task-01-design-system/scripts/build-tokens.js:80-102`):** `soft shadow` retains an earlier `#c2410c1f` burnt orange tint and typography tokens were omitted from the Figma JSON export, requiring JS fallbacks in `build-tokens.js`.
-4. **Offline sync stamp uses wrong typography token (`src/styles/app.css:49-60`):** `.sync-pill` consumes `--type-label-small-*` (`11px`, weight `500`) instead of `--type-body-small-*` (`12px`, weight `400`) assigned in `task-01-design-system/docs/type-scale.md`.
-5. **Unbundled offline font & missing button interactive states (`src/styles/variables.css:195-269`, `src/styles/app.css:212-228`):** Missing local `.woff2` `@font-face` fallback for offline Android and missing `:hover` / `:focus-visible` / `:active` states on `.btn-primary`.
+1. **Unauthenticated `/orders` route exposes all customer rows (`src/app/orders/page.tsx:24-26`, `src/app/api/pickup-requests/route.ts:7-9`):** Returns the 10–20 most recent `pickup_requests` rows without session authentication or user ownership filtering.
+2. **DDL `CREATE TABLE IF NOT EXISTS` inside request path (`src/lib/db.ts:24-35`):** Opens SQLite and executes schema creation on every API call rather than using versioned migrations.
+3. **Minimal API validation & raw 500 error exposure (`src/app/api/pickup-requests/route.ts:28-34`, `54`):** Lacks Zod schema validation and leaks raw database exception messages in `500` JSON responses.
+4. **No offline form draft queueing (`src/app/pickup/PickupForm.tsx:78-85`):** If Amaka's cellular signal drops during `fetch`, entered notes are not saved locally for retry.
+5. **Unresolved Task 01 Figma defects (`task-01-design-system/docs/defects.md`):** Light Mode `Surface_Container_Lowest` maps to `#2B3230` (`1.31:1` contrast, avoided in UI), `error 60–99` export as `#FFFFFF`, and `Plus Jakarta Sans` lacks bundled offline `.woff2` files.
