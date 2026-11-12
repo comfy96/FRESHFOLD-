@@ -1,0 +1,58 @@
+# Step 9: Branching & Pull Request Graph Proof
+
+## 1. Git Log Graph BEFORE Deleting Rejected Second Branch (showing feat/information-design --no-ff merge AND diverged chore/discarded-experiment):
+$ git log --oneline --graph --all --decorate
+* 7a407ae (HEAD -> chore/discarded-experiment) chore: test live chat footer prompt (decided against)
+*   6d5269d (main) Merge feat/information-design: Step 10 information design and Task 2 docs
+|\  
+| * 3cbb6fd (feat/information-design) chore(docs): normalize readme-test.md trailing newline
+| * f07dc95 docs(task-02): add Node >=22.5 prerequisite to README and scaffold readme-test.md
+| * b63de85 docs(task-02): add hand-drawn working tree photo (14) and update Task 02 status
+| * aaee406 chore(git): ignore tsconfig.tsbuildinfo and normalize trailing newlines
+| * 17e09f2 docs(task-02): add Task 02 reasoning docs, defects, interview answers, and updated 7-section README
+| * 6c77f06 fix(pickup): fail visibly on non-201 HTTP responses and record Task 2 runtime evidence
+| * a7ad71e fix(head): set metadataBase in RootLayout for Open Graph resolution
+| * 346f54b feat(task-02): implement head metadata, favicon, OG tags, collapsed CTA, and clamp() responsive type
+|/  
+* 86c26f2 feat(task-02): add /orders route and record server startup and breakage logs
+* 6f164c3 chore(env): allow .env.example template while keeping .env gitignored
+* ebf4fcd feat(task-02): add SQLite pickup request API and /pickup form route
+* bf14d0c fix(tokens): restore clean #007B71 primary tokens in variables.css
+* 6d071e2 feat(task-02): scaffold Next.js TypeScript foundation and minimal 100dvh home shell
+* 947ae61 Update .gitignore and CSS variables
+* 361d1d5 (origin/main, origin/HEAD) test(task-01): add broken token regression evidence and update Task 01 status
+* 384bf9b test(task-01): capture before/after screen evidence
+* 19f06bf feat(task-01): compile semantic CSS variables and build order receipt screen
+* a719b76 docs(task-01): add Fresh Fold design system specs, Figma captures, and token exports
+
+## 2. Returning to main and Deleting Rejected Second Branch Unmerged:
+$ git checkout main
+Switched to branch 'main'
+Your branch is ahead of 'origin/main' by 15 commits.
+  (use "git push" to publish your local commits)
+$ git branch -D chore/discarded-experiment
+Deleted branch chore/discarded-experiment (was 7a407ae).
+
+## 3. Git Log Graph AFTER Deleting Rejected Branch (proving feat/information-design merged cleanly and chore/discarded-experiment was never merged):
+$ git log --oneline --graph --all --decorate
+*   6d5269d (HEAD -> main) Merge feat/information-design: Step 10 information design and Task 2 docs
+|\  
+| * 3cbb6fd (feat/information-design) chore(docs): normalize readme-test.md trailing newline
+| * f07dc95 docs(task-02): add Node >=22.5 prerequisite to README and scaffold readme-test.md
+| * b63de85 docs(task-02): add hand-drawn working tree photo (14) and update Task 02 status
+| * aaee406 chore(git): ignore tsconfig.tsbuildinfo and normalize trailing newlines
+| * 17e09f2 docs(task-02): add Task 02 reasoning docs, defects, interview answers, and updated 7-section README
+| * 6c77f06 fix(pickup): fail visibly on non-201 HTTP responses and record Task 2 runtime evidence
+| * a7ad71e fix(head): set metadataBase in RootLayout for Open Graph resolution
+| * 346f54b feat(task-02): implement head metadata, favicon, OG tags, collapsed CTA, and clamp() responsive type
+|/  
+* 86c26f2 feat(task-02): add /orders route and record server startup and breakage logs
+* 6f164c3 chore(env): allow .env.example template while keeping .env gitignored
+* ebf4fcd feat(task-02): add SQLite pickup request API and /pickup form route
+* bf14d0c fix(tokens): restore clean #007B71 primary tokens in variables.css
+* 6d071e2 feat(task-02): scaffold Next.js TypeScript foundation and minimal 100dvh home shell
+* 947ae61 Update .gitignore and CSS variables
+* 361d1d5 (origin/main, origin/HEAD) test(task-01): add broken token regression evidence and update Task 01 status
+* 384bf9b test(task-01): capture before/after screen evidence
+* 19f06bf feat(task-01): compile semantic CSS variables and build order receipt screen
+* a719b76 docs(task-01): add Fresh Fold design system specs, Figma captures, and token exports

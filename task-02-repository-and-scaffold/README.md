@@ -26,6 +26,6 @@ Taking Fresh Fold Laundry from static design-system files to a running Next.js +
 4. No offline form draft persistence on `PickupForm.tsx:78-85` when signal drops.
 
 ## 4. Remaining Human-Only Evidence
-- `docs/readme-test.md`: Blind onboarding test on an unfamiliar person.
-- `evidence/15-git-log-graph.txt` & GitHub PR URL: Push `feat/information-design`, open & merge PR on GitHub, then test and delete a rejected branch.
+- `docs/readme-test.md`: Record verbatim friction from a live unfamiliar person following `README.md`.
+- GitHub PR URL in `README.md`: Push `main` and `feat/information-design` to `origin` and add the GitHub Pull Request link. (`15-git-log-graph.txt` is already captured locally with `--no-ff` merge + discarded branch proof.)
 
