@@ -50,3 +50,4 @@ Check 4 — Flagged Deviations / Unverified Defaults:
 - `next.config.ts` uses minimal defaults (`reactStrictMode: true`) without custom offline PWA service-worker headers yet (to be addressed when offline caching is built).
 - `src/index.html` and `src/styles/app.css` remain in `src/` as historical Task 01 files outside Next.js App Router bundling.
 ================================================================================
+

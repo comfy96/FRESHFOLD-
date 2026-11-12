@@ -7,5 +7,6 @@ out/
 !.env.example
 *.log
 next-env.d.ts
+tsconfig.tsbuildinfo
 *.db
 *.sqlite

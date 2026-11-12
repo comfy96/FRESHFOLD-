@@ -35,3 +35,4 @@ export function getDb(): DatabaseSync {
   `);
   return db;
 }
+
