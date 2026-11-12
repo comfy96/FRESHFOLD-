@@ -10,8 +10,7 @@ Fresh Fold Laundry is a lightweight customer record portal that gives Nigerian n
 ---
 
 ## 2. Status
-- **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static Customer Order Status screen (`src/index.html`, `src/styles/app.css`), and all Task 01 written reasoning, defects, and interview answers.
-- **Half done:** Headless browser screen captures (`09`–`11`) and unmerged regression branch log (`12`) pending Git commit setup and Chrome capture.
+- **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static Customer Order Status screen (`src/index.html`, `src/styles/app.css`), all Task 01 written reasoning, defects, interview answers, headless Chrome screen captures (`09`–`11`), and unmerged regression branch proof (`12`).
 - **Not started:**
   - `task-02-repository-and-scaffold/`: Backend/framework scaffold, live database persistence, and Git workflow testing.
   - `task-03-client-validation/`: Single-page authentication form, client-side validation rules, and screen-reader accessibility fixes.

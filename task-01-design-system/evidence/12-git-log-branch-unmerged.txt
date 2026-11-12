@@ -1,0 +1,20 @@
+# Step 8: Deliberate Regression Branch Deleted Without Merging
+
+## 1. Branch history BEFORE deleting (showing diverged regression commit 3521d02):
+$ git log --oneline --graph --all --decorate
+* 3521d02 (HEAD -> chore/break-token-referencing) chore(regression): break --color-primary token reference and change source brand to #9E2A2B
+* 384bf9b (main) test(task-01): capture before/after screen evidence
+* 19f06bf feat(task-01): compile semantic CSS variables and build order receipt screen
+* a719b76 docs(task-01): add Fresh Fold design system specs, Figma captures, and token exports
+
+## 2. Switching back to main and deleting unmerged branch:
+$ git checkout main
+Switched to branch 'main'
+$ git branch -D chore/break-token-referencing
+Deleted branch chore/break-token-referencing (was 3521d02).
+
+## 3. Git log AFTER deletion (proving chore/break-token-referencing was never merged into main):
+$ git log --oneline --graph --all --decorate
+* 384bf9b (HEAD -> main) test(task-01): capture before/after screen evidence
+* 19f06bf feat(task-01): compile semantic CSS variables and build order receipt screen
+* a719b76 docs(task-01): add Fresh Fold design system specs, Figma captures, and token exports
