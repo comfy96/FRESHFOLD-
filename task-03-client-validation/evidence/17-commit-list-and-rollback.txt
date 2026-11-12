@@ -1,0 +1,26 @@
+# Step 9: Deterministic Rollback by Specific Commit ID
+
+## 1. Commit List Before Rollback:
+$ git log --oneline -n 6
+1c0d1c5 chore: add unrequested AI chat prompt inside auth form (regret change)
+2f67f2e test(task-03): record SPA, validation, accessibility, and attack evidence
+6ff8ea1 fix(task-03): clear password on mode switch, scope hint to signup, add checkbox required
+4dc0480 feat(task-03): fix 4 accessibility issues, add text docket input, and implement aria-disabled submit
+26b9232 feat(task-03): collapse auth routes into /auth SPA and record Stage 1 pre-audit form
+4d976bb feat(task-03): add separate signup, login, and reset-password pages before SPA collapse
+
+## 2. Target Commit ID Identified:
+Target clean state ID: 2f67f2e (immediately prior to the unrequested AI chat prompt commit).
+
+## 3. Exact Rollback Command Executed:
+$ git reset --hard 2f67f2e
+HEAD is now at 2f67f2e test(task-03): record SPA, validation, accessibility, and attack evidence
+
+## 4. Commit List After Rollback:
+$ git log --oneline -n 6
+2f67f2e test(task-03): record SPA, validation, accessibility, and attack evidence
+6ff8ea1 fix(task-03): clear password on mode switch, scope hint to signup, add checkbox required
+4dc0480 feat(task-03): fix 4 accessibility issues, add text docket input, and implement aria-disabled submit
+26b9232 feat(task-03): collapse auth routes into /auth SPA and record Stage 1 pre-audit form
+4d976bb feat(task-03): add separate signup, login, and reset-password pages before SPA collapse
+05666be test(task-02): capture Step 9 git log graph (15) with --no-ff merge and discarded branch

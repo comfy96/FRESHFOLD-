@@ -12,10 +12,12 @@ Fresh Fold Laundry is a lightweight customer record portal that gives Nigerian n
 ## 2. Status
 - **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static order screen (`src/index.html`), and all Task 01 docs and browser captures (`01`–`12`).
 - **Finished (Task 02 Code, Diagnostics & Docs):** Phased Next.js 15 + TypeScript scaffold without Tailwind, SQLite persistence (`POST /api/pickup-requests` returning HTTP `201`, `/pickup`, `/orders`), cold/warm load benchmarks (`1,414 ms` $\rightarrow$ `13 ms`), 3 server breakages and recoveries (`05`–`10`), false-success investigation (`11`–`13`), hand-drawn working tree diagram (`14-working-tree-drawing.jpg`), Git branch graph proof (`15-git-log-graph.txt`), information design (`16`–`20`), and written docs (`model-choices.md`, `performance-note.md`, `false-success.md`, `working-tree.md`, `information-design.md`, `defects.md`, `interview-answers.md`).
-- **Pending Human Actions (Task 02):**
+- **Finished (Task 03 SPA Form, Validation, Accessibility & Docs):** Collapsed auth routes (`/signup`, `/login`, `/reset-password` $\rightarrow$ `/auth?mode=signup|login|reset`, 6 pages $\rightarrow$ 4 pages), implemented shop-derived client validation + `<input type="text" inputMode="numeric">` for dockets, fixed 4 accessibility issues verified via Chrome AXTree (`CautionIcon`, `aria-disabled` + explanation alert, `<label htmlFor>`, `aria-describedby`), proved client-side rules provide zero security via direct `curl` `HTTP 201` bypass (`evidence/16`), executed deterministic rollback `git reset --hard 2f67f2e`, and wrote all Task 03 docs (`spa-rationale.md`, `field-justification.md`, `validation-rules.md`, `terms-note.md`, `enumeration.md`, `accessibility-audit.md`, `client-side-is-not-security.md`, `rollback.md`, `defects.md`, `interview-answers.md`).
+- **Pending Optional/User Actions (Tasks 02 & 03):**
   - `task-02-repository-and-scaffold/docs/readme-test.md`: Complete live onboarding test with an unfamiliar human tester and paste their verbatim quote.
-  - GitHub Push & PR URL: Push `main` + `feat/information-design` to `origin` and record the GitHub PR link below.
-- **Not started:** `task-03-client-validation/`, `task-04-server-security/`, `task-05-sessions-compliance-defence/`.
+  - GitHub Push & PR URL: Push branches to `origin` interactively and record PR links below.
+  - *(Optional bonus)* Record macOS VoiceOver clips `11-screenreader-before.mp3` & `12-screenreader-after.mp3` and walkthrough clips (`task-03-client-validation/evidence/18-walkthrough.mp4`).
+- **Not started:** `task-04-server-security/`, `task-05-sessions-compliance-defence/`.
 
 *(Task 02 Pull Request URL: `<pending GitHub PR creation for feat/information-design -> main>`)*
 
@@ -46,7 +48,7 @@ Open `.env` and set `DATABASE_URL` to a local SQLite path (for example `./freshf
 npm run dev
 ```
 
-Open `http://localhost:3000` in your browser. Visit `/pickup` to record a laundry pickup request and `/orders` to view logged shop records.
+Open `http://localhost:3000` in your browser. Visit `/auth?mode=signup` (tabs for `Sign up`, `Log in`, `Reset password`) to test customer registration, `/pickup` to record a laundry pickup request, and `/orders` to view logged shop records.
 
 ---
 
@@ -69,3 +71,5 @@ Open `http://localhost:3000` in your browser. Visit `/pickup` to record a laundr
 3. **Minimal API validation & raw 500 error exposure (`src/app/api/pickup-requests/route.ts:28-34`, `54`):** Lacks Zod schema validation and leaks raw database exception messages in `500` JSON responses.
 4. **No offline form draft queueing (`src/app/pickup/PickupForm.tsx:78-85`):** If Amaka's cellular signal drops during `fetch`, entered notes are not saved locally for retry.
 5. **Unresolved Task 01 Figma defects (`task-01-design-system/docs/defects.md`):** Light Mode `Surface_Container_Lowest` maps to `#2B3230` (`1.31:1` contrast, avoided in UI), `error 60–99` export as `#FFFFFF`, and `Plus Jakarta Sans` lacks bundled offline `.woff2` files.
+6. **Unvalidated `POST /api/auth/register` & plaintext storage (`src/app/api/auth/register/route.ts:9-36`):** Deliberately accepts direct `curl` payloads without Zod validation (`HTTP 201`, `accountId: 4`) and stores plaintext `password` and `claim_pin` in SQLite until Task 04 server hardening.
+7. **Auth UI attack gaps & unhandled submit errors (`src/app/auth/AuthForm.tsx:69, 81, 146-163, 400-416`):** Accepts whitespace-padded passwords like `"a         "`, allows `"a@b"`, posts untrimmed emails, lacks a `catch`/error alert on failed registration `fetch`, and omits a blur-level inline error binding on the terms checkbox.
