@@ -1,0 +1,14 @@
+# Step 1: Page Count BEFORE Collapsing Authentication Routes
+
+Question to agent: List every page route currently in the Next.js application (src/app/**/page.tsx).
+
+$ find src/app -name 'page.tsx' | sort
+src/app/login/page.tsx
+src/app/orders/page.tsx
+src/app/page.tsx
+src/app/pickup/page.tsx
+src/app/reset-password/page.tsx
+src/app/signup/page.tsx
+
+Total pages before: 6
+Routes: /, /login, /orders, /pickup, /reset-password, /signup
