@@ -7,8 +7,12 @@ import styles from './orders.module.css';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Shop Records — Fresh Fold Laundry',
-  description: 'Verified dated item counts recorded at the shop.',
+  title: 'Shop Records',
+  description: 'Calm, dated laundry counts and shop payment records.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function OrdersPage() {

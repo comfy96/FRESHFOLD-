@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#F4FBF8"/>
+  <rect x="64" y="64" width="1072" height="502" rx="24" fill="#EEF5F2" stroke="#BEC9C6" stroke-width="2"/>
+  <rect x="112" y="120" width="72" height="72" rx="16" fill="#007B71"/>
+  <path d="M132 138h32v11H143v7h16v10H143v10h-11v-38z" fill="#FFFFFF"/>
+  <text x="208" y="168" font-family="sans-serif" font-size="36" font-weight="700" fill="#007B71">Fresh Fold Laundry</text>
+  <text x="112" y="290" font-family="sans-serif" font-size="64" font-weight="700" fill="#161D1B">Our records show every item</text>
+  <text x="112" y="370" font-family="sans-serif" font-size="64" font-weight="700" fill="#161D1B">counted and dated.</text>
+  <text x="112" y="455" font-family="sans-serif" font-size="30" fill="#3F4947">Calm, dated laundry counts and shop payment records.</text>
+</svg>

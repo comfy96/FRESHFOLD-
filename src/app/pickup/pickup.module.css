@@ -26,6 +26,17 @@
   letter-spacing: var(--type-title-large-letter-spacing);
   color: var(--color-primary);
   text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.brandLink:hover {
+  opacity: 0.8;
+}
+
+.brandLink:focus-visible {
+  outline: 0.125rem solid var(--color-primary);
+  outline-offset: 0.1875rem;
 }
 
 .card {
@@ -126,3 +137,4 @@
   font-size: var(--type-body-medium-font-size);
   line-height: var(--type-body-medium-line-height);
 }
+

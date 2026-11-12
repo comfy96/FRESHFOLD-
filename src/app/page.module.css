@@ -10,40 +10,109 @@
 
 .ledgerShell {
   width: 100%;
-  max-width: 28rem;
+  max-width: 32rem;
   background-color: var(--color-surface-container-low);
   border: 0.0625rem solid var(--color-outline-variant);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 1.75rem 1.5rem;
   box-shadow: var(--shadow-medium);
 }
 
-.brandHeader {
-  font-family: var(--type-title-large-font-family);
-  font-weight: var(--type-title-large-font-weight);
-  font-size: var(--type-title-large-font-size);
-  line-height: var(--type-title-large-line-height);
-  letter-spacing: var(--type-title-large-letter-spacing);
-  color: var(--color-primary);
-  margin-bottom: 0.5rem;
+.brandBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
 }
 
-.headline {
-  font-family: var(--type-headline-medium-font-family);
-  font-weight: var(--type-headline-medium-font-weight);
-  font-size: var(--type-headline-medium-font-size);
-  line-height: var(--type-headline-medium-line-height);
-  letter-spacing: var(--type-headline-medium-letter-spacing);
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.logoLink:hover {
+  opacity: 0.85;
+  transform: translateY(-0.0625rem);
+}
+
+.logoLink:focus-visible {
+  outline: 0.125rem solid var(--color-primary);
+  outline-offset: 0.25rem;
+}
+
+.heroHeadline {
+  font-family: var(--type-display-large-font-family);
+  font-weight: var(--type-display-large-font-weight);
+  font-size: clamp(2rem, 7.5vw, 3.5625rem);
+  line-height: 1.2;
+  letter-spacing: var(--type-display-large-letter-spacing);
   color: var(--color-on-surface);
-  margin-bottom: 0.75rem;
+  max-width: 12ch;
+  margin-bottom: 1rem;
 }
 
 .summary {
+  font-family: var(--type-body-large-font-family);
+  font-weight: var(--type-body-large-font-weight);
+  font-size: var(--type-body-large-font-size);
+  line-height: var(--type-body-large-line-height);
+  letter-spacing: var(--type-body-large-letter-spacing);
+  color: var(--color-on-surface-variant);
+  margin-bottom: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.primaryBtn {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--type-label-large-font-family);
+  font-weight: var(--type-label-large-font-weight);
+  font-size: var(--type-label-large-font-size);
+  line-height: var(--type-label-large-line-height);
+  letter-spacing: var(--type-label-large-letter-spacing);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primaryBtn:hover {
+  opacity: 0.92;
+  box-shadow: var(--shadow-soft);
+}
+
+.primaryBtn:focus-visible {
+  outline: 0.125rem solid var(--color-primary);
+  outline-offset: 0.1875rem;
+}
+
+.secondaryLink {
   font-family: var(--type-body-medium-font-family);
   font-weight: var(--type-body-medium-font-weight);
   font-size: var(--type-body-medium-font-size);
   line-height: var(--type-body-medium-line-height);
-  letter-spacing: var(--type-body-medium-letter-spacing);
-  color: var(--color-on-surface-variant);
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
+.secondaryLink:hover {
+  opacity: 0.8;
+}
+
+.secondaryLink:focus-visible {
+  outline: 0.125rem solid var(--color-primary);
+  outline-offset: 0.1875rem;
+}
