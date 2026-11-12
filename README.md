@@ -29,6 +29,8 @@ Fresh Fold Laundry is a lightweight customer record portal that gives Nigerian n
 ---
 
 ## 4. Getting started
+**Prerequisite:** Node.js **v22.5+** (tested on **v26.13.0**; required for built-in `node:sqlite`). Verify with `node -v`.
+
 Run these exact commands in order from a fresh clone:
 
 ```bash
