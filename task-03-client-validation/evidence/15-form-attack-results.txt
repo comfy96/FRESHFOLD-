@@ -1,0 +1,12 @@
+# Step 8 (Part 1): Attacking the Client Form Through the Browser UI
+
+1. Single-char name ("a"): BLOCKED -> Enter at least two name words separated by a space.
+2. Password of 10 spaces ("          "): BLOCKED (by !val.trim()) -> Enter a password for your account.
+3. Password "a         " (1 char + 9 spaces): GOT THROUGH! (passes !val.trim() and length === 10)
+4. Email "a@b" (no TLD dot): GOT THROUGH! (/^\S+@\S+$/ accepts a@b)
+5. Email with trailing whitespace ("amaka@example.com   "), 240-char name, 15-digit docket, password "a         ":
+   Combined form submission result: Account #3 created.
+
+Login real-time vs submit check observed in 08-email-on-submit-login.png:
+   While typing "amaka" on login: (none while typing)
+   After clicking Log in:         Enter a valid email address before signing in.

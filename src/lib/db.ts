@@ -32,6 +32,17 @@ export function getDb(): DatabaseSync {
       notes TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
     );
+    CREATE TABLE IF NOT EXISTS customer_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      docket_number INTEGER NOT NULL,
+      claim_pin TEXT NOT NULL,
+      password TEXT NOT NULL,
+      terms_accepted INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+    );
   `);
   return db;
 }

@@ -1,0 +1,21 @@
+# Step 8 (Part 2): Bypassing the Form Entirely (Direct Request to /api/auth/register)
+
+$ curl -i -s -X POST http://localhost:3000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"fullName":"a","email":"not-an-email","phone":"1","docketNumber":0,"claimPin":"1","password":"1","termsAccepted":false}'
+
+HTTP/1.1 201 Created
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Thu, 12 Nov 2026 13:46:31 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":true,"accountId":4,"received":{"fullName":"a","email":"not-an-email","phone":"1","docketNumber":0,"claimPin":"1","password":"1","termsAccepted":false}}
+
+=== SQLITE ROW VERIFICATION (customer_accounts) ===
+id  full_name                                                                                                                                                                                                                                        email              phone        docket_number    claim_pin  password    terms_accepted  created_at          
+--  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  -----------------  -----------  ---------------  ---------  ----------  --------------  --------------------
+4   a                                                                                                                                                                                                                                                not-an-email       1            0                1          1           0               2026-11-12T13:46:31Z
+3   A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A  amaka@example.com  08030004120  999999999999999  12345      a           1               2026-11-12T13:46:31Z
