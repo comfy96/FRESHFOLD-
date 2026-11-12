@@ -1,0 +1,25 @@
+# Step 1: Server Log While Switching Between Signup, Login, and Reset Forms
+
+Initial page load URL: http://localhost:3000/auth?mode=signup
+Switched to Log in -> URL became: http://localhost:3000/auth?mode=login
+Switched to Reset password -> URL became: http://localhost:3000/auth?mode=reset
+
+=== FULL SERVER LOG UP TO INITIAL LOAD ===
+> freshfold-laundry@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.29
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.171:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1937ms
+ ○ Compiling /auth ...
+ ✓ Compiled /auth in 677ms (637 modules)
+ GET /auth?mode=signup 200 in 861ms
+ ✓ Compiled /icon.svg in 87ms (416 modules)
+ GET /icon.svg?0947eed47a18c094 200 in 152ms
+
+=== SERVER LOG LINES EMITTED DURING FORM SWITCHING ===
+(0 new HTTP requests — conditional client rendering via window.history.replaceState produced zero page reloads and zero new sessions.)
