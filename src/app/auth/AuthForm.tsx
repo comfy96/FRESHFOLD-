@@ -5,22 +5,39 @@ import styles from './auth.module.css';
 
 type AuthMode = 'signup' | 'login' | 'reset';
 
-// Stage 1 (Pre-Audit) Form:
-// Intentionally retains 4 accessibility defects, <input type="number"> for docketNumber,
-// decorative non-functional badge, and hidden submit button version so we can capture genuine
-// BEFORE evidence before fixing each in Stage 2.
+function CautionIcon() {
+  return (
+    <svg
+      className={styles.cautionIcon}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
 export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [docketNumber, setDocketNumber] = useState('0');
+  const [docketNumber, setDocketNumber] = useState('');
   const [claimPin, setClaimPin] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [disabledExplain, setDisabledExplain] = useState<string | null>(null);
   const [serverMsg, setServerMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,7 +47,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
   function switchMode(next: AuthMode) {
     setMode(next);
     setErrors({});
-    setTouched({});
+    setDisabledExplain(null);
     setServerMsg(null);
     window.history.replaceState(null, '', `/auth?mode=${next}`);
   }
@@ -68,7 +85,6 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
   }
 
   function handleBlur(name: string, val: string) {
-    setTouched((prev) => ({ ...prev, [name]: true }));
     const err = validateField(name, val);
     setErrors((prev) => ({ ...prev, [name]: err }));
   }
@@ -85,6 +101,8 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setDisabledExplain(null);
+
     if (mode === 'login') {
       const emailErr = !/^\S+@\S+$/.test(email.trim())
         ? 'Enter a valid email address before signing in.'
@@ -95,6 +113,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
       setServerMsg('Login flow will connect in Task 05.');
       return;
     }
+
     if (mode === 'reset') {
       const emailErr = !/^\S+@\S+$/.test(email.trim()) ? 'Enter your account email.' : '';
       setErrors({ email: emailErr });
@@ -102,6 +121,27 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
       setServerMsg('Reset flow will connect in Task 04/05.');
       return;
     }
+
+    if (!signupReady) {
+      const nextErrors = {
+        fullName: validateField('fullName', fullName),
+        email: validateField('email', email),
+        phone: validateField('phone', phone),
+        docketNumber: validateField('docketNumber', docketNumber),
+        claimPin: validateField('claimPin', claimPin),
+        password: validateField('password', password),
+      };
+      setErrors(nextErrors);
+      if (!termsAccepted) {
+        setDisabledExplain(
+          'Accept the Fresh Fold Laundry record-keeping terms before creating your account.'
+        );
+      } else {
+        setDisabledExplain('Fix the highlighted fields above before creating your account.');
+      }
+      return;
+    }
+
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -121,11 +161,20 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
     }
   }
 
+  const passwordDescribedBy = [
+    password.length > 0 ? 'password-hint' : null,
+    errors.password ? 'password-error' : null,
+  ]
+    .filter(Boolean)
+    .join(' ') || undefined;
+
   return (
     <div>
       <div className={styles.tabs} role="tablist" aria-label="Account actions">
         <button
           type="button"
+          role="tab"
+          aria-selected={mode === 'signup'}
           className={`${styles.tabBtn} ${mode === 'signup' ? styles.tabBtnActive : ''}`}
           onClick={() => switchMode('signup')}
         >
@@ -133,6 +182,8 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={mode === 'login'}
           className={`${styles.tabBtn} ${mode === 'login' ? styles.tabBtnActive : ''}`}
           onClick={() => switchMode('login')}
         >
@@ -140,15 +191,14 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={mode === 'reset'}
           className={`${styles.tabBtn} ${mode === 'reset' ? styles.tabBtnActive : ''}`}
           onClick={() => switchMode('reset')}
         >
           Reset password
         </button>
       </div>
-
-      {/* Decorative non-functional badge (to be removed in Step 2) */}
-      <div className={styles.decorativeBadge}>Fresh Fold Member Ledger</div>
 
       <h1 className={styles.heading}>
         {mode === 'signup'
@@ -174,12 +224,20 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
             <input
               id="fullName"
               type="text"
+              aria-required="true"
+              aria-invalid={Boolean(errors.fullName)}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
               className={`${styles.input} ${errors.fullName ? styles.inputError : ''}`}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               onBlur={() => handleBlur('fullName', fullName)}
             />
-            {errors.fullName && <div className={styles.errorRow}>{errors.fullName}</div>}
+            {errors.fullName && (
+              <div id="fullName-error" role="alert" className={styles.errorRow}>
+                <CautionIcon />
+                <span>{errors.fullName}</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -190,6 +248,9 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
           <input
             id="email"
             type="email"
+            aria-required="true"
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? 'email-error' : undefined}
             className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
             value={email}
             onChange={(e) => {
@@ -203,7 +264,12 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
               if (mode === 'signup') handleBlur('email', email);
             }}
           />
-          {errors.email && <div className={styles.errorRow}>{errors.email}</div>}
+          {errors.email && (
+            <div id="email-error" role="alert" className={styles.errorRow}>
+              <CautionIcon />
+              <span>{errors.email}</span>
+            </div>
+          )}
         </div>
 
         {mode === 'signup' && (
@@ -215,28 +281,44 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
               <input
                 id="phone"
                 type="tel"
+                aria-required="true"
+                aria-invalid={Boolean(errors.phone)}
+                aria-describedby={errors.phone ? 'phone-error' : undefined}
                 className={`${styles.input} ${errors.phone ? styles.inputError : ''}`}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 onBlur={() => handleBlur('phone', phone)}
               />
-              {errors.phone && <div className={styles.errorRow}>{errors.phone}</div>}
+              {errors.phone && (
+                <div id="phone-error" role="alert" className={styles.errorRow}>
+                  <CautionIcon />
+                  <span>{errors.phone}</span>
+                </div>
+              )}
             </div>
 
             <div className={styles.fieldGroup}>
               <label htmlFor="docketNumber" className={styles.label}>
                 Shop docket number
               </label>
-              {/* Intentionally number input in Stage 1 to capture default-0/spinner bug */}
               <input
                 id="docketNumber"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                aria-required="true"
+                aria-invalid={Boolean(errors.docketNumber)}
+                aria-describedby={errors.docketNumber ? 'docketNumber-error' : undefined}
                 className={`${styles.input} ${errors.docketNumber ? styles.inputError : ''}`}
                 value={docketNumber}
-                onChange={(e) => setDocketNumber(e.target.value)}
+                onChange={(e) => setDocketNumber(e.target.value.replace(/\D/g, ''))}
                 onBlur={() => handleBlur('docketNumber', docketNumber)}
               />
-              {errors.docketNumber && <div className={styles.errorRow}>{errors.docketNumber}</div>}
+              {errors.docketNumber && (
+                <div id="docketNumber-error" role="alert" className={styles.errorRow}>
+                  <CautionIcon />
+                  <span>{errors.docketNumber}</span>
+                </div>
+              )}
             </div>
 
             <div className={styles.fieldGroup}>
@@ -247,12 +329,20 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
                 id="claimPin"
                 type="text"
                 inputMode="numeric"
+                aria-required="true"
+                aria-invalid={Boolean(errors.claimPin)}
+                aria-describedby={errors.claimPin ? 'claimPin-error' : undefined}
                 className={`${styles.input} ${errors.claimPin ? styles.inputError : ''}`}
                 value={claimPin}
                 onChange={(e) => setClaimPin(e.target.value.replace(/\D/g, ''))}
                 onBlur={() => handleBlur('claimPin', claimPin)}
               />
-              {errors.claimPin && <div className={styles.errorRow}>{errors.claimPin}</div>}
+              {errors.claimPin && (
+                <div id="claimPin-error" role="alert" className={styles.errorRow}>
+                  <CautionIcon />
+                  <span>{errors.claimPin}</span>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -266,6 +356,9 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
+                aria-required="true"
+                aria-invalid={Boolean(errors.password)}
+                aria-describedby={passwordDescribedBy}
                 className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -274,44 +367,72 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
               <button
                 type="button"
                 className={styles.toggleBtn}
+                aria-pressed={showPassword}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
                 onClick={() => setShowPassword((s) => !s)}
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
             {password.length > 0 && (
-              <p className={styles.hintText}>
+              <p id="password-hint" className={styles.hintText}>
                 Use at least 10 characters (three ordinary words work well).
               </p>
             )}
-            {errors.password && <div className={styles.errorRow}>{errors.password}</div>}
+            {errors.password && (
+              <div id="password-error" role="alert" className={styles.errorRow}>
+                <CautionIcon />
+                <span>{errors.password}</span>
+              </div>
+            )}
           </div>
         )}
 
         {mode === 'signup' && (
-          <div className={styles.checkboxRow}>
-            <input
-              id="termsAccepted"
-              type="checkbox"
-              className={styles.checkboxInput}
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-            />
-            <span className={styles.checkboxLabel}>
-              I accept the Fresh Fold Laundry record-keeping terms and privacy notice.
-            </span>
-          </div>
+          <>
+            <div className={styles.termsText}>
+              Fresh Fold Laundry stores your name, phone number, email, and garment counts
+              solely to show your dated laundry and payment records. Financial records are
+              retained for Nigerian tax audits; contact Chinedu Okafor on 0803 000 4120
+              for record requests.
+            </div>
+            <div className={styles.checkboxRow}>
+              <input
+                id="termsAccepted"
+                type="checkbox"
+                aria-required="true"
+                className={styles.checkboxInput}
+                checked={termsAccepted}
+                onChange={(e) => {
+                  setTermsAccepted(e.target.checked);
+                  if (e.target.checked) setDisabledExplain(null);
+                }}
+              />
+              <label htmlFor="termsAccepted" className={styles.checkboxLabel}>
+                I accept the Fresh Fold Laundry record-keeping terms and privacy notice.
+              </label>
+            </div>
+          </>
         )}
 
-        {/* Stage 1 hidden button version for signup */}
-        {(mode !== 'signup' || signupReady) && (
-          <button type="submit" className={styles.submitBtn}>
-            {mode === 'signup'
-              ? 'Create account'
-              : mode === 'login'
-              ? 'Log in'
-              : 'Send reset code'}
-          </button>
+        <button
+          type="submit"
+          aria-disabled={mode === 'signup' ? !signupReady : false}
+          className={`${styles.submitBtn} ${
+            mode === 'signup' && !signupReady ? styles.submitBtnDisabled : ''
+          }`}
+        >
+          {mode === 'signup'
+            ? 'Create account'
+            : mode === 'login'
+            ? 'Log in'
+            : 'Send reset code'}
+        </button>
+
+        {disabledExplain && (
+          <div role="alert" className={styles.statusExplain}>
+            {disabledExplain}
+          </div>
         )}
 
         {serverMsg && (
