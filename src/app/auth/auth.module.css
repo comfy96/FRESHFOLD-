@@ -286,3 +286,9 @@
   font-family: var(--type-label-small-font-family);
   font-size: var(--type-label-small-font-size);
 }
+
+.verifyBox {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 0.0625rem solid var(--color-outline-variant);
+}

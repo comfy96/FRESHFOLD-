@@ -1,43 +1,156 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
+import { registerSchema } from '@/lib/validation/auth';
+import { checkRateLimit, getClientIp } from '@/lib/security/rate-limit';
+import { checkBreachedPassword } from '@/lib/security/breach-check';
+import { hashSecret } from '@/lib/security/password';
+import { generateSixDigitCode, getOtpExpiryDate, hashOtpCode } from '@/lib/security/otp';
+import { enqueueVerificationEmail } from '@/lib/email/mailer';
 
-// Task 03 intentional stage: client-side validation only, NO server-side validation or hashing yet.
-// Task 04 closes this hole with Zod boundary schemas, Argon2id/bcrypt, rate limiting, and verification.
 export async function POST(request: Request) {
+  const clientIp = getClientIp(request.headers);
+  const rl = checkRateLimit('register', clientIp);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      {
+        error:
+          'Our records show too many registration attempts from this connection. Please wait before trying again.',
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(rl.retryAfterSeconds),
+          'X-RateLimit-Limit': String(rl.limit),
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    );
+  }
+
+  let rawBody: unknown;
   try {
-    const body = await request.json();
-    const db = getDb();
+    rawBody = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON request body.' }, { status: 400 });
+  }
 
-    const stmt = db.prepare(
-      'INSERT INTO customer_accounts (full_name, email, phone, docket_number, claim_pin, password, terms_accepted) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  const parsed = registerSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = String(issue.path[0] ?? 'form');
+      if (!fieldErrors[key]) {
+        fieldErrors[key] = issue.message;
+      }
+    }
+    return NextResponse.json(
+      {
+        error: 'Validation failed at server boundary.',
+        fieldErrors,
+      },
+      { status: 400 }
     );
+  }
 
-    const result = stmt.run(
-      String(body.fullName ?? ''),
-      String(body.email ?? ''),
-      String(body.phone ?? ''),
-      Number(body.docketNumber ?? 0),
-      String(body.claimPin ?? ''),
-      String(body.password ?? ''),
-      body.termsAccepted ? 1 : 0
-    );
+  // Replace raw untrusted input strictly with parsed, normalised data.
+  const data = parsed.data;
 
-    const rowId = Number(result.lastInsertRowid);
-    console.log(
-      `[POST /api/auth/register] 201 Created account_id=${rowId} email="${String(body.email ?? '')}"`
+  const breach = await checkBreachedPassword(data.password);
+  if (breach.breached) {
+    return NextResponse.json(
+      {
+        error:
+          'This password appeared in a known public breach corpus. Choose a less common passphrase.',
+        fieldErrors: {
+          password:
+            'This password appeared in a public breach corpus. Pick three unrelated words instead.',
+        },
+      },
+      { status: 400 }
     );
+  }
+
+  try {
+    const existing = await prisma.customer.findUnique({
+      where: { email: data.email },
+      select: { id: true },
+    });
+    if (existing) {
+      return NextResponse.json(
+        {
+          error: 'An account with this email address already exists.',
+          fieldErrors: { email: 'An account with this email address already exists.' },
+        },
+        { status: 409 }
+      );
+    }
+
+    const [passwordHash, claimPinHash] = await Promise.all([
+      hashSecret(data.password),
+      hashSecret(data.claimPin),
+    ]);
+
+    const otpCode = generateSixDigitCode();
+    const codeHash = hashOtpCode(otpCode);
+    const expiresAt = getOtpExpiryDate();
+
+    const created = await prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.create({
+        data: {
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          docketNumber: data.docketNumber,
+          claimPinHash,
+          passwordHash,
+          termsAccepted: true,
+        },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          docketNumber: true,
+        },
+      });
+
+      await tx.verificationCode.create({
+        data: {
+          customerId: customer.id,
+          purpose: 'email_verify',
+          codeHash,
+          expiresAt,
+        },
+      });
+
+      return customer;
+    });
+
+    enqueueVerificationEmail({
+      to: created.email,
+      fullName: created.fullName,
+      docketNumber: created.docketNumber,
+      code: otpCode,
+    });
 
     return NextResponse.json(
       {
         ok: true,
-        accountId: rowId,
-        received: body,
+        accountId: created.id,
+        email: created.email,
+        verificationRequired: true,
       },
-      { status: 201 }
+      {
+        status: 201,
+        headers: {
+          'X-RateLimit-Limit': String(rl.limit),
+          'X-RateLimit-Remaining': String(rl.remaining),
+        },
+      }
     );
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Registration error';
-    console.error(`[POST /api/auth/register] 500 ERROR: ${message}`);
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: 'Unable to record account right now. Please try again shortly.' },
+      { status: 500 }
+    );
   }
 }

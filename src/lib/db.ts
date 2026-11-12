@@ -17,9 +17,13 @@ export function getDb(): DatabaseSync {
     throw new Error('DATABASE_URL environment variable is missing or empty.');
   }
 
-  const dbPath = path.isAbsolute(rawUrl)
-    ? rawUrl
-    : path.resolve(process.cwd(), rawUrl);
+  const normalized = rawUrl.startsWith('file:') ? rawUrl.slice(5) : rawUrl;
+  const baseDir = rawUrl.startsWith('file:')
+    ? path.resolve(process.cwd(), 'prisma')
+    : process.cwd();
+  const dbPath = path.isAbsolute(normalized)
+    ? normalized
+    : path.resolve(baseDir, normalized);
 
   const db = new DatabaseSync(dbPath);
   db.exec(`
