@@ -27,3 +27,4 @@ Behind the interface, **nothing was saved**:
 A stakeholder reviewing a screen-shared demo watches the user fill in `"Chisom Eze"`, click `"Record pickup request"`, and see a calm green confirmation message. Because no error toast appeared and the form cleared/settled cleanly, the reviewer assumes persistence works—never realizing there is **no `HTTP 201 Created`** in the server logs and **zero rows** in `freshfold.db`.
 
 *(Fixed in `src/app/pickup/PickupForm.tsx` by checking `if (!response.ok)` and displaying `role="alert"` on non-2xx responses.)*
+

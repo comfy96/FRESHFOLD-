@@ -22,3 +22,4 @@ Against a local responsiveness target of **10 ms – 50 ms** for a minimal singl
   2. **Post-compile React Server Component render + HTTP serialization (`159 ms`):** The remaining `1411ms - 1252ms = 159ms` covers first-pass RSC tree evaluation and response streaming.
   3. **Local TCP loopback + curl handshake overhead (`~2–3 ms`):** Difference between server log (`1411ms`) and external `curl` (`1413.67ms`).
 - **Inferred / unmeasured inside the `1,252 ms` compiler bucket:** File-system stat calls across `node_modules` and TypeScript/SWC AST transformation. In production (`next build && next start`), pre-compiled static chunks eliminate that `1,252 ms` cold-compile penalty completely.
+

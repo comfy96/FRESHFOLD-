@@ -20,3 +20,4 @@
 Delegating `src/lib/formatRecordDate.ts` to `flash_lite` without passing the Nigerian domain constraint explicitly produced a subtle production bug: `flash_lite` emitted raw UTC hours (`date.getUTCHours()`) and unpadded day numbers (`2 Nov 2026`). Because Fresh Fold Laundry operates in Nigeria (`WAT`, `UTC+1`), SQLite's UTC timestamps would display one hour behind actual shop time on Amaka Obi's receipt screen.
 
 I switched back to the high-reasoning Antigravity agent to inspect `db.ts` + `business-brief.md`, append the missing `Z` UTC marker for SQLite timestamps, add the `+60 min` `WAT` offset, and zero-pad days (`02 Nov 2026, 11:46 WAT`).
+

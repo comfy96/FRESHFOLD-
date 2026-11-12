@@ -153,3 +153,4 @@ This relies purely on **superficial UI navigation** rather than verifying persis
 
 **What I would do instead:**
 Submit real distinct payloads, verify **`HTTP 201 Created`** in server logs, inspect the live database table directly (`sqlite3` / Prisma Studio) to confirm two rows with unique IDs and timestamps minutes apart, and deliberately break `DATABASE_URL` to verify the UI surfaces an error rather than false success.
+

@@ -25,3 +25,4 @@
 ## 3. Interaction & Responsiveness
 - **Pointer & Hover Feedback:** Every interactive link and button (`logoLink`, `primaryBtn`, `secondaryLink`, `brandLink`) explicitly sets `cursor: pointer`, subtle `:hover` opacity/shadow shifts, and `0.125rem` `:focus-visible` outlines. The SVG logo links directly to `/`.
 - **Fluid `clamp()` Sizing (`src/app/page.module.css:47`, `20-responsive-three-widths.png`):** Replaced static `57px` with `font-size: clamp(2rem, 7.5vw, 3.5625rem)` (scaling smoothly from `32px` on `320px` phones up to our `57px` Display Large ceiling on desktop) and verified zero overflow at `320px`, `768px`, and `1280px`.
+

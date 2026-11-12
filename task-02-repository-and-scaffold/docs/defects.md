@@ -29,3 +29,4 @@ Per assessment standards, this document records genuine defects currently presen
 - **Location:** `src/app/pickup/PickupForm.tsx:78-85`
 - **What is wrong:** Although `itemCount` filters non-digits on the client (`replace(/\D/g, '')`), the browser still allows empty/zero submits if bypassed via `curl`, and the form offers no local `localStorage`/IndexedDB draft persistence if Amaka's data bundle drops mid-submission.
 - **Production cost:** When signal drops between form entry and `fetch`, Amaka loses her typed notes and must retype them once her connection returns.
+

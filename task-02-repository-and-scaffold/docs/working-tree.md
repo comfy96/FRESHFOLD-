@@ -18,3 +18,4 @@ When every change is committed directly to `main`, four engineering safeguards c
 Before first deployment, `main` is private scaffolding—a broken commit only wastes your own time while developing on `localhost:3000`.
 
 Once Fresh Fold Laundry is deployed and real Nigerian customers like Amaka Obi rely on `/orders` and `/pickup` for their garment counts and bank transfer proof, `main` becomes **live customer truth**. Pushing an untested change directly to `main` breaks active user sessions, corrupts SQLite writes, or introduces a false-success regression in front of paying customers—where mistakes become visible publicly, erode trust instantly, and can no longer be undone quietly.
+
