@@ -9,13 +9,13 @@
   --primitive-color-primary-0: #000000;
   --primitive-color-primary-10: #00201D;
   --primitive-color-primary-20: #003732;
-  --primitive-color-primary-30: #005049;
-  --primitive-color-primary-40: #007B71;
-  --primitive-color-primary-50: #1A857B;
-  --primitive-color-primary-60: #3F9F94;
-  --primitive-color-primary-70: #5DBBAF;
-  --primitive-color-primary-80: #79D6CA;
-  --primitive-color-primary-90: #96F3E6;
+  --primitive-color-primary-30: #5F1314;
+  --primitive-color-primary-40: #9E2A2B;
+  --primitive-color-primary-50: #B84243;
+  --primitive-color-primary-60: #D15C5D;
+  --primitive-color-primary-70: #E87A7B;
+  --primitive-color-primary-80: #F4A5A5;
+  --primitive-color-primary-90: #FAD2CF;
   --primitive-color-primary-95: #B3FFF4;
   --primitive-color-primary-98: #E4FFFA;
   --primitive-color-primary-99: #F2FFFC;
@@ -130,7 +130,7 @@
   --primitive-color-extra-tone-96: #EEF5F2;
 
   /* --- Tier 2: Semantic Color Roles - Light Mode (Consumable by UI) --- */
-  --color-primary: var(--primitive-color-primary-40);
+  --color-primary: #007B71; /* DELIBERATE BREAK: raw hex instead of var(--primitive-color-primary-40) */
   --color-on-primary: var(--primitive-color-primary-100);
   --color-primary-containr: var(--primitive-color-primary-90);
   --color-on-primary-container: var(--primitive-color-primary-30);
