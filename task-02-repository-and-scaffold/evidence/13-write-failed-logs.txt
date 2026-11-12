@@ -1,0 +1,52 @@
+# Step 6 (Inverse): Deliberately Broken DATABASE_URL — False Success Evidence
+
+## 1. Environment Change:
+Renamed .env to .env.bak and started Next.js with DATABASE_URL unset (env -u DATABASE_URL npm run dev).
+
+## 2. Database Row Count Before vs After Submission:
+Rows before: 2
+Rows after:  2 (ZERO new rows written)
+
+## 3. Actual API Response Returned to Client:
+HTTP/1.1 500 Internal Server Error
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Thu, 12 Nov 2026 10:58:23 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":false,"error":"DATABASE_URL environment variable is missing or empty."}
+
+## 4. Server Log Output:
+[POST /api/pickup-requests] 500 Database Error: DATABASE_URL environment variable is missing or empty.
+ POST /api/pickup-requests 500 in 307ms
+
+## 5. What the User Saw in the UI (src/app/pickup/PickupForm.tsx:21-38):
+Because PickupForm.tsx never checked 'if (!res.ok)', the browser swallowed the HTTP 500 error and displayed:
+  role="status": "Our records show your pickup request was saved."
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setStatusMessage(null);
+
+    try {
+      await fetch('/api/pickup-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName,
+          phone,
+          itemCount: Number(itemCount),
+          serviceMode,
+          notes,
+        }),
+      });
+      // INTENTIONAL STEP 6 DIAGNOSTIC BUG: assumes fetch succeeded without checking response.ok
+      setStatusMessage('Our records show your pickup request was saved.');
+    } catch {
+      setStatusMessage('Our records show your pickup request was saved.');
+    } finally {
+      setSubmitting(false);
+    }

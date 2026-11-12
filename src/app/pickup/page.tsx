@@ -4,8 +4,12 @@ import PickupForm from './PickupForm';
 import styles from './pickup.module.css';
 
 export const metadata: Metadata = {
-  title: 'Record Pickup Request — Fresh Fold Laundry',
-  description: 'Log laundry item counts for collection or drop-off.',
+  title: 'Record Pickup Request',
+  description: 'Calm, dated laundry counts and shop payment records.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function PickupPage() {
@@ -31,3 +35,4 @@ export default function PickupPage() {
     </main>
   );
 }
+

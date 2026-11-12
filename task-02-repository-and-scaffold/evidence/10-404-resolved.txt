@@ -1,0 +1,19 @@
+# Recovery 3: Diagnosing and Resolving the 404 on /orders
+
+## Diagnostic Checklist Followed (in order, before touching code):
+1. Checked URL spelling vs src/app/ directory tree: src/app/ had page.tsx and pickup/page.tsx, but no orders/page.tsx.
+2. Inspected dev server console: confirmed 'Compiled /_not-found' and 'GET /orders 404 in 113ms' (zero runtime crash).
+3. Created src/app/orders/page.tsx with default React Server Component export reading SQLite rows.
+
+## Verification After Fix:
+$ curl -s -o /dev/null -w 'HTTP %{http_code} | time_total=%{time_total}s
+' http://localhost:3000/orders
+HTTP 200 | time_total=1.513799s
+
+--- Dev Server Log ---
+ ✓ Starting...
+ ✓ Ready in 11.2s
+ ○ Compiling /orders ...
+ ✓ Compiled /orders in 1339ms (647 modules)
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+ GET /orders 200 in 1511ms
