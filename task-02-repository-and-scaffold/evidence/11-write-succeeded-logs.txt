@@ -1,0 +1,31 @@
+# Step 6: Database Write Verification (HTTP 201 Created — Two Submissions Minutes Apart)
+
+=== ROW 1 SUBMISSION ===
+HTTP/1.1 201 Created
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Thu, 12 Nov 2026 10:46:25 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":true,"record":{"id":1,"customer_name":"Amaka Obi","phone":"08030004120","item_count":14,"service_mode":"collect","notes":"2 white office shirts need starch","created_at":"2026-11-12T10:46:25Z"}}
+=== ROW 2 SUBMISSION ===
+HTTP/1.1 201 Created
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Thu, 12 Nov 2026 10:53:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":true,"record":{"id":2,"customer_name":"Tunde Bakare","phone":"08025551944","item_count":8,"service_mode":"dropoff","notes":"Native agbada + 7 office shirts","created_at":"2026-11-12T10:53:03Z"}}
+=== SERVER LOG OUTPUT ===
+[POST /api/pickup-requests] 201 Created row_id=2 customer="Tunde Bakare" items=8 created_at=2026-11-12T10:53:03Z
+ POST /api/pickup-requests 201 in 164ms
+
+=== SQLITE TABLE INSPECTION (freshfold.db -> pickup_requests) ===
+id  customer_name  phone        item_count  service_mode  notes                              created_at          
+--  -------------  -----------  ----------  ------------  ---------------------------------  --------------------
+1   Amaka Obi      08030004120  14          collect       2 white office shirts need starch  2026-11-12T10:46:25Z
+2   Tunde Bakare   08025551944  8           dropoff       Native agbada + 7 office shirts    2026-11-12T10:53:03Z

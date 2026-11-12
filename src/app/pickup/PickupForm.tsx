@@ -10,15 +10,17 @@ export default function PickupForm() {
   const [serviceMode, setServiceMode] = useState('collect');
   const [notes, setNotes] = useState('');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isError, setIsError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setStatusMessage(null);
+    setIsError(false);
 
     try {
-      await fetch('/api/pickup-requests', {
+      const response = await fetch('/api/pickup-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -29,10 +31,20 @@ export default function PickupForm() {
           notes,
         }),
       });
-      // INTENTIONAL STEP 6 DIAGNOSTIC BUG: assumes fetch succeeded without checking response.ok
-      setStatusMessage('Our records show your pickup request was saved.');
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setIsError(true);
+        setStatusMessage(
+          data.error || 'Could not save your pickup request. Please contact Chinedu Okafor on 0803 000 4120.'
+        );
+        return;
+      }
+      setStatusMessage(
+        `Our records show pickup #${data.record?.id ?? ''} saved at ${data.record?.created_at ?? 'just now'}.`
+      );
     } catch {
-      setStatusMessage('Our records show your pickup request was saved.');
+      setIsError(true);
+      setStatusMessage('Network error while saving. Please try again or call Chinedu Okafor on 0803 000 4120.');
     } finally {
       setSubmitting(false);
     }
@@ -121,7 +133,10 @@ export default function PickupForm() {
       </button>
 
       {statusMessage && (
-        <div role="status" className={styles.statusSuccess}>
+        <div
+          role={isError ? 'alert' : 'status'}
+          className={isError ? styles.statusError : styles.statusSuccess}
+        >
           {statusMessage}
         </div>
       )}
