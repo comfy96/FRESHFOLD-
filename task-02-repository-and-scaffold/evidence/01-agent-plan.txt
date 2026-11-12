@@ -1,0 +1,59 @@
+================================================================================
+PHASE 1: PRE-SCAFFOLD ANALYSIS, DISAGREEMENTS & EXPLICIT ASSUMPTIONS
+Project: Fresh Fold Laundry
+Date: 2026-11-12
+Rule Followed: Task 02 Phase 1 — Halt completely before writing any code.
+================================================================================
+
+1. CONTEXT & DESIGN SYSTEM FILES INSPECTED
+- README.md (Root monorepo spec: Next/Task-01 static HTML5, CSS vars, Node v26.13.0)
+- task-01-design-system/docs/business-brief.md (Amaka Obi, entry-level Android, small weekly data bundle, unreliable signal/power, "Our records show", calm receipt-book clarity)
+- task-01-design-system/docs/colour-roles.md (#007B71 pinned Primary 40, Light/Dark modes, WCAG audit)
+- task-01-design-system/docs/type-scale.md (15 Plus Jakarta Sans styles, 1.4x Display/Headline/Label, 1.5x Title/Body, tabular-nums)
+- task-01-design-system/docs/shadows.md (Brand-tinted #007B71 Soft/Medium/Hard elevation)
+- task-01-design-system/docs/defects.md (5 documented Task 01 defects)
+- src/styles/variables.css (122 primitives, 55 semantic roles, 3 shadows, 15 type styles)
+- src/styles/app.css & src/index.html (Task 01 static order status screen)
+- task-02-repository-and-scaffold/docs/scaffold-prompt.md (User's scaffolding instructions)
+
+2. ARCHITECTURAL & TECH STACK SUMMARY
+- Framework: Next.js (App Router) with TypeScript, NO Tailwind CSS (CSS Modules / plain CSS consuming semantic variables only).
+- Runtime & Tooling: Node.js v26.13.0, npm 11.20.0, local SQLite (/usr/bin/sqlite3 available; Prisma or node:sqlite to be wired when Step 6 database persistence is added).
+- Styling Contract: Zero hardcoded hex/RGB values, zero --primitive-* variables in components, zero arbitrary pixel units in layout/component CSS (consume var(--color-*), var(--type-*), var(--shadow-*), and rem spacing).
+- Scope Boundary (Phase 2): Foundation project setup (package.json, tsconfig.json, next.config.ts, root layout.tsx, globals.css importing variables.css) and a minimal 100dvh home screen ONLY. No auth forms, no database write routes, no dashboard widgets yet.
+
+3. FILE DISAGREEMENTS & CONFLICTS FOUND (STOPPING TO ASK BEFORE CODING)
+1) Stack Disagreement (README.md vs scaffold-prompt.md):
+   - README.md (Section 3) describes Task 01's zero-JS static HTML5/CSS layer chosen for Amaka Obi's small data bundle.
+   - scaffold-prompt.md specifies a Next.js + TypeScript application.
+   - Question: Confirm we should now initialize Next.js + TypeScript at the repository root (updating README.md Section 3 for Task 02), while noting the bundle-size trade-off for Amaka's entry-level Android phone.
+
+2) Token Filename & Unit Disagreement (scaffold-prompt.md vs variables.css):
+   - scaffold-prompt.md references "tokens.css" and forbids arbitrary pixel units.
+   - Task 01 compiled tokens to `src/styles/variables.css` (where `--type-*` and `--shadow-*` currently contain `px` values from Figma, e.g., `57px`, `80px`).
+   - Question: Should Next.js import `src/styles/variables.css` directly (or mirror/alias `src/styles/tokens.css`), and keep Figma-compiled `px` values inside `variables.css` while enforcing `rem` everywhere in layout/component CSS?
+
+3) Missing Rules Files (AGENT.md / .agent/rules/*):
+   - scaffold-prompt.md states it inspected `AGENT.md` and `.agent/rules/*`, neither of which currently exists in the repository.
+   - Question: Should I create a minimal `AGENT.md` / `.agent/rules/` during Phase 2 setup (including the propose-and-stop rule forbidding agents from running database migrations for Task 04)?
+
+4) Existing Task 01 `src/index.html` and `src/styles/app.css`:
+   - `src/index.html` is a static Task 01 artifact.
+   - Question: When scaffolding Next.js under `src/app/`, should we leave `src/index.html` untouched as historical Task 01 reference (or move it to `task-01-design-system/`), or replace it cleanly while preserving `src/styles/variables.css`?
+
+5) Known Broken Light-Mode Tokens in `variables.css`:
+   - Per `docs/defects.md`, `--color-surface-container-lowest` currently resolves to dark `#2B3230` (1.31:1 contrast) and `--color-primary-containr` carries a Figma typo.
+   - Assumption until confirmed: The minimal scaffold home screen will strictly avoid `--color-surface-container-lowest` and use `--color-surface` (`#F4FBF8`) and `--color-surface-container-low` (`#EEF5F2`) instead.
+
+4. EXPLICIT ASSUMPTIONS BROUGHT INTO PHASE 2
+A1. Repository Location: Next.js (`package.json`, `tsconfig.json`, `next.config.ts`, `src/app/`) will live at the workspace root `/Users/APPLE/Desktop/FRESHFOLD` alongside `task-01-*`..`task-05-*` folders (single monorepo model declared in `README.md`).
+A2. Package Installation & Network: Because `/Users/APPLE/.npm` cache is empty and `next`/`react`/`typescript` are not installed locally, `npm install` will require running outside the terminal sandbox (`BypassSandbox: true`) with internet connectivity.
+A3. Font Loading: `next/font/google` (`Plus_Jakarta_Sans`, weights 400/500/600/700, subsets `latin`) will load `Plus Jakarta Sans` cleanly at build time without violating offline runtime layout (Next.js self-hosts the WOFF2 files in `.next/static/`), resolving Task 01 Defect #5's missing font file while maintaining `system-ui, sans-serif` fallback.
+A4. CSS Strategy: Native CSS Modules (`page.module.css`) + `globals.css` importing `variables.css` will be used—zero Tailwind CSS, zero inline style hex values.
+A5. Minimal Home Screen Content: Phase 2 builds ONLY the shell (`layout.tsx`) and a calm, plain `100dvh` minimal home screen showing the Fresh Fold Laundry identity, a single primary "Our records" status placeholder container, and zero product forms/DB queries until Task 02 Step 6.
+A6. Port & Dev Server: `next dev` will start on default port `3000` (or the next free local port) for Step 4 cold-load measurement and Step 5 port-conflict diagnostics.
+
+================================================================================
+STATUS: HALTED — Waiting for user review and explicit approval before writing code.
+================================================================================
+

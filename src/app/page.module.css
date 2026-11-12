@@ -1,0 +1,49 @@
+.viewport {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  background-color: var(--color-surface);
+}
+
+.ledgerShell {
+  width: 100%;
+  max-width: 28rem;
+  background-color: var(--color-surface-container-low);
+  border: 0.0625rem solid var(--color-outline-variant);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-medium);
+}
+
+.brandHeader {
+  font-family: var(--type-title-large-font-family);
+  font-weight: var(--type-title-large-font-weight);
+  font-size: var(--type-title-large-font-size);
+  line-height: var(--type-title-large-line-height);
+  letter-spacing: var(--type-title-large-letter-spacing);
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.headline {
+  font-family: var(--type-headline-medium-font-family);
+  font-weight: var(--type-headline-medium-font-weight);
+  font-size: var(--type-headline-medium-font-size);
+  line-height: var(--type-headline-medium-line-height);
+  letter-spacing: var(--type-headline-medium-letter-spacing);
+  color: var(--color-on-surface);
+  margin-bottom: 0.75rem;
+}
+
+.summary {
+  font-family: var(--type-body-medium-font-family);
+  font-weight: var(--type-body-medium-font-weight);
+  font-size: var(--type-body-medium-font-size);
+  line-height: var(--type-body-medium-line-height);
+  letter-spacing: var(--type-body-medium-letter-spacing);
+  color: var(--color-on-surface-variant);
+}
+

@@ -1,0 +1,23 @@
+@import "../styles/variables.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100dvh;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--type-body-large-font-family);
+  font-weight: var(--type-body-large-font-weight);
+  font-size: var(--type-body-large-font-size);
+  line-height: var(--type-body-large-line-height);
+  letter-spacing: var(--type-body-large-letter-spacing);
+  -webkit-font-smoothing: antialiased;
+}
+

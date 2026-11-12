@@ -1,0 +1,52 @@
+================================================================================
+PHASE 2 & PHASE 3: SCAFFOLD FILE INVENTORY, ASSUMPTIONS & SELF-AUDIT
+Project: Fresh Fold Laundry
+Date: 2026-11-12
+================================================================================
+
+1. FLAT INVENTORY OF FILES CREATED OR MODIFIED
+Created:
+- AGENT.md
+- .agent/rules/freshfold-standards.md
+- package.json
+- package-lock.json
+- tsconfig.json
+- next.config.ts
+- src/app/globals.css
+- src/app/layout.tsx
+- src/app/page.module.css
+- src/app/page.tsx
+
+Modified:
+- .gitignore (added .next/, out/, next-env.d.ts, *.db, *.sqlite)
+- task-02-repository-and-scaffold/docs/scaffold-prompt.md (renamed from scaffold-prompt-md)
+
+Preserved Untouched (Historical Task 01 Artifacts):
+- src/styles/variables.css
+- src/styles/app.css
+- src/index.html
+
+2. EXPLICIT ASSUMPTIONS MADE DURING PHASE 2 SCAFFOLDING
+1. Font Loading Strategy Shift: In Phase 1, I assumed `next/font/google` (`Plus_Jakarta_Sans`) would bundle WOFF2 assets cleanly. During Phase 2, knowing Amaka's entry-level Android constraint and local offline reliability hazards during build/dev, I intentionally avoided `next/font/google` in `src/app/layout.tsx` and kept `Plus Jakarta Sans, sans-serif` bound via `src/styles/variables.css` (preserving Task 01 Defect #5 openly until subsetted local `.woff2` files are bundled).
+2. No Tailwind CSS: Confirmed `package.json` excludes `tailwindcss` and `postcss`, relying purely on CSS Modules (`page.module.css`) and `globals.css`.
+3. Path Aliasing: Configured `@/* -> ./src/*` in `tsconfig.json` and `src/app/` directory layout so Next.js coexists cleanly alongside Task 01's `src/styles/variables.css`.
+4. Safe Surface Role Selection: Avoided `--color-surface-container-lowest` (known Task 01 Defect #1 resolving to `#2B3230`, 1.31:1 contrast) and used `--color-surface` and `--color-surface-container-low` instead.
+5. Next.js 15 / React 19 Baseline: Installed `next@^15.1.0` (`15.5.x` resolved in `package-lock.json`), `react@^19.0.0`, and `typescript@^5.7.2` via `npm install`.
+
+3. PHASE 3: SELF-AUDIT AGAINST SCAFFOLDING INSTRUCTIONS
+Check 1 — Token Compliance (`src/app/`):
+$ grep -rnE "#[0-9a-fA-F]{3,8}|rgb\(|rgba\(|hsl\(|--primitive-|[0-9]+px" src/app/
+(exit code: 1 — zero matches; 100% of colors, typography, shadows, and spacing in `globals.css` and `page.module.css` use semantic `--color-*`, `--type-*`, `--shadow-*`, or `rem`/`dvh` units.)
+
+Check 2 — TypeScript Check:
+$ npx tsc --noEmit
+(exit code: 0 — clean compilation with `strict: true`.)
+
+Check 3 — Scope Boundary Check:
+- Verified `src/app/page.tsx` renders ONLY the minimal 100dvh home shell (`Fresh Fold Laundry` / `Our records show` placeholder).
+- Zero auth endpoints, zero forms, zero database queries, zero dashboards, and zero chat UI generated.
+
+Check 4 — Flagged Deviations / Unverified Defaults:
+- `next.config.ts` uses minimal defaults (`reactStrictMode: true`) without custom offline PWA service-worker headers yet (to be addressed when offline caching is built).
+- `src/index.html` and `src/styles/app.css` remain in `src/` as historical Task 01 files outside Next.js App Router bundling.
+================================================================================
