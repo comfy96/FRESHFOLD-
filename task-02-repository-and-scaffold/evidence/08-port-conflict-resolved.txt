@@ -1,0 +1,22 @@
+# Recovery 2: Finding Holding Process PID and Restarting Cleanly
+$ lsof -nP -iTCP:3000 -sTCP:LISTEN
+COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    56412 APPLE   13u  IPv6 0x865b661285483049      0t0  TCP *:3000 (LISTEN)
+
+Identified PID holding port 3000: 56412
+$ kill 56412
+$ lsof -nP -iTCP:3000 -sTCP:LISTEN (verify port freed)
+(no processes listening on port 3000)
+
+$ npm run dev (restarting cleanly on port 3000)
+
+> freshfold-laundry@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.29
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.171:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 9.9s

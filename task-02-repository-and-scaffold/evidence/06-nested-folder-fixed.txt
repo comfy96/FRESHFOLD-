@@ -1,0 +1,22 @@
+# Recovery 1: Fixing the Nested Folder Two Ways
+
+## Way 1: Fix by Changing Directory (cd into nested folder)
+$ cd freshfold-app && pwd && npm run dev
+/tmp/nested-repro/FRESHFOLD/freshfold-app
+
+> dev
+> echo "Nested dev server ready"
+
+Nested dev server ready
+Exit code: 0
+
+## Way 2: Fix by Rescaffolding In Place at Repository Root (/Users/APPLE/Desktop/FRESHFOLD)
+# Prompt given to agent: 'Remove the nested subfolder and scaffold package.json, tsconfig.json, and src/app/ directly at the repository root.'
+$ pwd
+/Users/APPLE/Desktop/FRESHFOLD
+$ ls -la package.json tsconfig.json next.config.ts
+-rw-r--r--@ 1 APPLE  staff  131 Nov 12 11:32 next.config.ts
+-rw-r--r--@ 1 APPLE  staff  448 Nov 12 11:32 package.json
+-rw-r--r--@ 1 APPLE  staff  603 Nov 12 11:32 tsconfig.json
+$ npx tsc --noEmit
+Exit code: 0 (TypeScript and npm scripts resolve cleanly from repository root)
