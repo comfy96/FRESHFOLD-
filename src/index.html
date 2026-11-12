@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fresh Fold Laundry — Order Record</title>
+  <link rel="stylesheet" href="styles/variables.css" />
+  <link rel="stylesheet" href="styles/app.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="top-bar">
+      <div class="brand-mark">Fresh Fold Laundry</div>
+      <div class="sync-pill">Saved offline: 11 Nov 2026</div>
+    </header>
+
+    <!-- Primary Order Status (Shows first before any typing) -->
+    <section class="receipt-card receipt-card--featured" aria-labelledby="order-status-heading">
+      <div class="status-badge">READY FOR PICKUP</div>
+      <h1 id="order-status-heading" class="order-headline">14 items ready</h1>
+      <p class="record-summary">
+        Our records show your laundry is washed, ironed, and counted at the shop.
+      </p>
+
+      <h2 class="ledger-section-title">Item Count Record</h2>
+      <div class="ledger-table">
+        <div class="ledger-row">
+          <div>
+            <span class="ledger-key">Collected at home</span>
+            <span class="record-date">Recorded 09 Nov 2026, 08:15 (Musa)</span>
+          </div>
+          <div class="ledger-value">14 items</div>
+        </div>
+        <div class="ledger-row">
+          <div>
+            <span class="ledger-key">Counted after ironing</span>
+            <span class="record-date">Checked 10 Nov 2026, 17:30 (Chidi)</span>
+          </div>
+          <div class="ledger-value">14 items</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Ledger Card -->
+    <section class="receipt-card" aria-labelledby="payment-record-heading">
+      <h2 id="payment-record-heading" class="ledger-section-title">Payment Record</h2>
+      <div class="ledger-table">
+        <div class="ledger-row">
+          <div>
+            <span class="ledger-key">Our records show received (Transfer)</span>
+            <span class="record-date">Confirmed 09 Nov 2026 (Tunde)</span>
+          </div>
+          <div class="ledger-value">&#8358;4,500.00</div>
+        </div>
+        <div class="ledger-row">
+          <div>
+            <span class="ledger-key">Our records show remaining balance</span>
+            <span class="record-date">Payable at shop or on return (Cash / Transfer)</span>
+          </div>
+          <div class="ledger-value">&#8358;1,500.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Business Questions Answered from Records -->
+    <section class="receipt-card" aria-labelledby="shop-answers-heading">
+      <h2 id="shop-answers-heading" class="ledger-section-title">Answers From Shop Records</h2>
+
+      <div class="qa-block">
+        <h3 class="qa-question">Are my clothes ready for pickup?</h3>
+        <p class="qa-answer">
+          Yes. Our records show 14 ironed items waiting at the counter.
+          <span class="record-date">Last updated: 10 Nov 2026, 18:00</span>
+        </p>
+      </div>
+
+      <div class="qa-block">
+        <h3 class="qa-question">How long will my clothes take?</h3>
+        <p class="qa-answer">
+          Standard wash and iron takes 48 hours from collection. This order is complete.
+          <span class="record-date">Last updated: 10 Nov 2026, 18:00</span>
+        </p>
+      </div>
+
+      <div class="qa-block">
+        <h3 class="qa-question">Can I bring them to the shop, or can you collect them from me?</h3>
+        <p class="qa-answer">
+          You can drop clothes at 14 Bode Thomas Rd (7am–7pm) or book home collection within Surulere.
+          <span class="record-date">Last updated: 09 Nov 2026, 08:15</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- Honest Fallback & Named Person -->
+    <aside class="contact-box" aria-label="Shop Contact">
+      <p class="contact-text">
+        If a record is silent or looks wrong, speak directly with <strong>Chinedu Okafor (Owner)</strong> on <strong>0803 000 4120</strong>.
+      </p>
+    </aside>
+
+    <a href="#confirm" class="btn-primary">Confirm pickup or delivery time</a>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,18 @@
+$ grep -rnE "(^|[^&])#[0-9a-fA-F]{3,8}|rgb\(|rgba\(|hsl\(|hsla\(|--primitive-" src/ --exclude="variables.css"
+(exit code: 1 — empty output confirms zero raw colours or primitives in UI code)
+
+$ grep -nE "#[0-9a-fA-F]{3,8}" src/styles/variables.css | head -n 10
+9:  --primitive-color-primary-0: #000000;
+10:  --primitive-color-primary-10: #00201D;
+11:  --primitive-color-primary-20: #003732;
+12:  --primitive-color-primary-30: #005049;
+13:  --primitive-color-primary-40: #007B71;
+14:  --primitive-color-primary-50: #1A857B;
+15:  --primitive-color-primary-60: #3F9F94;
+16:  --primitive-color-primary-70: #5DBBAF;
+17:  --primitive-color-primary-80: #79D6CA;
+18:  --primitive-color-primary-90: #96F3E6;
+... (raw hex values restricted strictly to Tier 1 primitives inside variables.css)
+
+$ grep -nE "^\s*--color-.*#[0-9a-fA-F]" src/styles/variables.css
+(exit code: 1 — empty output confirms zero raw hex literals in Tier 2 semantic roles)
