@@ -1,0 +1,14 @@
+{
+  "Soft shadow": {
+    "$type": "shadow",
+    "$value": [
+      {
+        "offsetX": "0px",
+        "offsetY": "4px",
+        "blur": "12px",
+        "spread": "-2px",
+        "color": "#c2410c1f"
+      }
+    ]
+  }
+}

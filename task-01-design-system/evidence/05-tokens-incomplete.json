@@ -1,0 +1,22 @@
+{
+  "effect": {
+    "soft shadow": {
+      "description": null,
+      "type": "custom-shadow",
+      "value": {
+        "shadowType": "dropShadow",
+        "radius": 12,
+        "color": "#c2410c1f",
+        "offsetX": 0,
+        "offsetY": 4,
+        "spread": -2
+      },
+      "extensions": {
+        "org.lukasoppermann.figmaDesignTokens": {
+          "styleId": "S:66ca0cf67efe76978f40a2c3a67abb7de656c351,",
+          "exportKey": "effect"
+        }
+      }
+    }
+  }
+}
