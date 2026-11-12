@@ -46,6 +46,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
 
   function switchMode(next: AuthMode) {
     setMode(next);
+    setPassword('');
     setErrors({});
     setDisabledExplain(null);
     setServerMsg(null);
@@ -162,7 +163,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
   }
 
   const passwordDescribedBy = [
-    password.length > 0 ? 'password-hint' : null,
+    mode === 'signup' && password.length > 0 ? 'password-hint' : null,
     errors.password ? 'password-error' : null,
   ]
     .filter(Boolean)
@@ -374,7 +375,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
-            {password.length > 0 && (
+            {mode === 'signup' && password.length > 0 && (
               <p id="password-hint" className={styles.hintText}>
                 Use at least 10 characters (three ordinary words work well).
               </p>
@@ -400,6 +401,7 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
               <input
                 id="termsAccepted"
                 type="checkbox"
+                required
                 aria-required="true"
                 className={styles.checkboxInput}
                 checked={termsAccepted}
