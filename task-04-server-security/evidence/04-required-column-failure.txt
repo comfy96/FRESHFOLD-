@@ -1,0 +1,37 @@
+# Step 3: Required Column Migration Failure on Populated Table (`evidence/04-required-column-failure.txt`)
+
+## 1. Scenario
+The `customers` table is populated with 1 live record:
+- id: 1, full_name: 'Amaka Obi', email: 'amaka@freshfold.ng', docket_number: 400
+
+We deliberately attempted to add a non-nullable column without a default value to `schema.prisma`:
+```prisma
+model Customer {
+  ...
+  preferredPickupWindow String @map("preferred_pickup_window")
+  ...
+}
+```
+
+## 2. Command Executed
+$ npx prisma migrate dev --name fail_required_col
+
+## 3. Terminal Output & Failure Captured
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": SQLite database "freshfold.db" at "file:../freshfold.db"
+
+⚠️  Warnings for the current datasource:
+
+  • Added the required column `preferred_pickup_window` to the `customers` table without a default value. There are 1 rows in this table, it is not possible to execute this step using migration transactions.
+
+Error:
+An error occurred while running the migration: We found changes that cannot be applied cleanly to the database.
+
+Column `preferred_pickup_window` on table `customers` does not have a default value and does not allow NULL values, but the table contains 1 rows.
+
+Suggestion:
+To solve this without data loss, perform the migration in three steps:
+1. Add the column as optional (nullable).
+2. Backfill existing rows with valid values.
+3. Make the column required.

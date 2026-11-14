@@ -66,7 +66,13 @@ export async function POST(request: Request) {
     if (!customer || !passwordMatches || customer.deletedAt) {
       return NextResponse.json(
         { error: 'Incorrect email or password.' },
-        { status: 401 }
+        {
+          status: 401,
+          headers: {
+            'X-RateLimit-Limit': String(rl.limit),
+            'X-RateLimit-Remaining': String(rl.remaining),
+          },
+        }
       );
     }
 

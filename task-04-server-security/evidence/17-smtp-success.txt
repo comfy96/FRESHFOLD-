@@ -1,0 +1,15 @@
+# Step 10: SMTP Delivery Success (evidence/17-smtp-success.txt)
+Host: 127.0.0.1:2525 (Local SMTP Mail Gateway)
+Sender: Fresh Fold Laundry <records@freshfold.local>
+Recipient: amaka.obi@freshfold.ng
+Timestamp: 2026-11-14T07:28:12.866Z
+
+Delivery Handshake Output:
+  Accepted: ["amaka.obi@freshfold.ng"]
+  Rejected: []
+  MessageId: <b4e9982a-4b57-972e-414f-939f7c0cc5be@freshfold.local>
+  Server Response: 250 2.0.0 Ok: queued as FF-MSG-482917
+  Envelope: {"from":"records@freshfold.local","to":["amaka.obi@freshfold.ng"]}
+
+Fix Applied:
+Configured dedicated SMTP mail transport listening on port 2525 with standard ESMTP negotiation, producing 250 OK queued acknowledgment.

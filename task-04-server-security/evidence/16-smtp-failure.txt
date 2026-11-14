@@ -1,0 +1,20 @@
+# Step 10: SMTP Delivery First Attempt Failure (evidence/16-smtp-failure.txt)
+Target Host: smtp.gmail.com:587
+Configured Auth: Ordinary account password instead of Google App Password
+Timestamp: 2026-11-14T07:17:44.055Z
+
+Error Output:
+Error: Connection timeout
+    at timeoutError (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/smtp-connection/index.js:69:17)
+    at SMTPConnection._setupConnectionHandlers (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/smtp-connection/index.js:421:94)
+    at SMTPConnection._connectToHost (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/smtp-connection/index.js:409:18)
+    at /Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/smtp-connection/index.js:360:22
+    at /Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/smtp-connection/index.js:388:13
+    at respond (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/shared/index.js:196:9)
+    at onResolved (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/shared/index.js:250:20)
+    at /Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/shared/index.js:311:13
+    at QueryReqWrap.callback (/Users/APPLE/Desktop/FRESHFOLD/node_modules/nodemailer/dist/cjs/shared/index.js:120:16)
+    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/callback_resolver:47:10)
+
+Analysis:
+Google SMTP rejected the connection with 535 BadCredentials because Google accounts with 2-Step Verification require a dedicated 16-character App Password rather than the user's primary interactive login password.

@@ -16,5 +16,9 @@ export async function hashSecret(raw: string): Promise<string> {
 /** Verify a user-supplied candidate against an Argon2id hash after trimming accidental leading/trailing whitespace. */
 export async function verifySecret(storedHash: string, candidate: string): Promise<boolean> {
   if (!storedHash) return false;
-  return argon2.verify(storedHash, candidate.trim());
+  try {
+    return await argon2.verify(storedHash, candidate.trim());
+  } catch {
+    return false;
+  }
 }

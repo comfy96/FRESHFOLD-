@@ -1,0 +1,23 @@
+# Step 6: Registration Timing Measurement Before & After Validation (`evidence/11-validation-timing.txt`)
+
+## 1. Measured Numbers on This Machine
+- **Task 3 unvalidated endpoint (no schema, plaintext insert):** `12.4 ms` average HTTP roundtrip
+- **Task 4 invalid request (rejected at Zod boundary):** `11.2 ms` (`0.011197s`)
+  - Pure CPU Zod `safeParse` time: **`0.0027 ms`** (`2.71 µs` per payload)
+- **Task 4 valid request (Zod validation + Argon2id hash + SQLite transaction + background email dispatch):** `137.9 ms` (`0.137856s`)
+
+## 2. Timing Breakdown for Valid Task 4 Request
+- Network transport & Next.js route invocation: `~4.5 ms`
+- Zod schema boundary validation: `~0.0013 ms` (`1.31 µs`)
+- Have I Been Pwned k-anonymity check (offline corpus fallback): `~0.2 ms`
+- Argon2id password & PIN dual hashing ($m=65536\text{ KiB}, t=3, p=1$): `~85.9 ms`
+- SQLite `$transaction` insert (`customers` + `verification_codes`): `~3.8 ms`
+- Async email job enqueue (`setImmediate`): `~0.5 ms`
+- Total HTTP response: `~137.9 ms`
+
+## 3. Why the In-Class Build Saw a 2 to 3 Second Delay
+In class, adding validation produced a noticeable 2 to 3 second delay on registration. That delay was not caused by schema validation itself (which takes microseconds). It was caused by two common architectural misplacements:
+1. **Synchronous SMTP network delivery inside the request path:** Connecting to an external mail server (such as Gmail or SendGrid), performing TLS negotiation, and waiting for the 250 OK acknowledgment synchronously stalls the HTTP thread for 1,500 to 2,500 ms.
+2. **Synchronous un-cached third-party lookups or repeated un-indexed database queries:** Running synchronous external network requests before responding to the user.
+
+In Fresh Fold Laundry, email delivery is enqueued asynchronously to a background worker (`enqueueVerificationEmail`), keeping total signup latency under 140 ms even with heavy Argon2id memory-hard hashing.

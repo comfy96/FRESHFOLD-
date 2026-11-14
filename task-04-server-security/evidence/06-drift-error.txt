@@ -1,0 +1,38 @@
+# Step 3: Deliberate Schema-Database Drift Error (`evidence/06-drift-error.txt`)
+
+## 1. Trigger Command
+Field `loyaltyTier String? @map("loyalty_tier")` was added to `prisma/schema.prisma` under `model Customer`.
+The Prisma client was regenerated without applying a database migration:
+```bash
+$ npx prisma generate
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+✔ Generated Prisma Client (v6.19.3) to ./node_modules/@prisma/client in 53ms
+```
+
+Then the application queried the un-migrated field:
+```bash
+$ node -e "
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+prisma.customer.findMany({ select: { id: true, loyaltyTier: true } })
+  .catch(err => console.error(err.message));
+"
+```
+
+## 2. Actual Error Captured
+```text
+Invalid `prisma.customer.findMany()` invocation:
+
+The column `main.customers.loyalty_tier` does not exist in the current database.
+```
+
+## 3. What Two Things Went Out of Step
+The two out-of-step artifacts are:
+1. **The client-side ORM types & query AST:** `prisma generate` rebuilt the TypeScript declarations and Prisma DMMF query engine metadata from `schema.prisma`, giving the application compile-time certainty that `Customer.loyaltyTier` exists.
+2. **The physical SQLite storage schema:** The underlying `freshfold.db` database was never touched by a DDL migration (`ALTER TABLE customers ADD COLUMN loyalty_tier`), so the table still only contained the physical columns from earlier migrations.
+
+When the application ran, the ORM sent a `SELECT "customers"."loyalty_tier"` query based on its updated client types, and SQLite aborted the query with `no such column` because runtime database reality diverged from the generated client model.
+
+## 4. Fix Applied
+Reverted the un-migrated `loyaltyTier` declaration in `prisma/schema.prisma` and ran `npx prisma generate` so client types and database tables matched again.
