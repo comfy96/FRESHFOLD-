@@ -1,0 +1,11 @@
+# Step 4.2 & 4.3: Hardware Timing Comparison (Argon2id vs SHA-256)
+Machine: darwin arm64 | Node v26.13.0
+Captured: 2026-11-12T13:59:19.507Z
+
+Argon2id (m=65536 KiB, t=3, p=1) average over 5 hashes: 85.904 ms/hash
+SHA-256 average over 100000 hashes (44.714 ms total): 0.000447 ms/hash
+
+Arithmetic (single-thread guesses per second on this CPU):
+  Argon2id: 1000 ms / 85.904 ms = 11.64 hashes/sec
+  SHA-256 : 1000 ms / 0.000447 ms = 2,236,432 hashes/sec
+  Speed ratio: SHA-256 is ~192,118x faster than Argon2id on this single core (and GPUs parallelize SHA-256 orders of magnitude further without memory hardness).

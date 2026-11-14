@@ -1,0 +1,85 @@
+# Step 3: Three-Step Safe Column Migration on Populated Table (`evidence/05-required-column-three-steps.txt`)
+
+## Step 1 of 3: Add the column as optional (nullable)
+### Schema Change:
+```prisma
+model Customer {
+  ...
+  preferredPickupWindow String? @map("preferred_pickup_window")
+  ...
+}
+```
+### Command:
+$ npx prisma migrate dev --name add_optional_window
+
+### Terminal Output:
+Applying migration `20261114062658_add_optional_window`
+The following migration(s) have been created and applied from new schema changes:
+prisma/migrations/
+  └─ 20261114062658_add_optional_window/
+    └─ migration.sql
+Your database is now in sync with your schema.
+
+### Generated DDL (`prisma/migrations/20261114062658_add_optional_window/migration.sql`):
+-- AlterTable
+ALTER TABLE "customers" ADD COLUMN "preferred_pickup_window" TEXT;
+
+---
+
+## Step 2 of 3: Fill (backfill) existing rows
+### Backfill Script Executed:
+$ node -e "
+const { DatabaseSync } = require('node:sqlite');
+const db = new DatabaseSync('./freshfold.db');
+const res = db.prepare(\"UPDATE customers SET preferred_pickup_window = 'Morning (8am - 12pm)' WHERE preferred_pickup_window IS NULL\").run();
+console.log('Backfilled rows:', res.changes);
+"
+Backfilled rows: 1
+
+---
+
+## Step 3 of 3: Make the column required
+### Schema Change:
+```prisma
+model Customer {
+  ...
+  preferredPickupWindow String @default("Morning (8am - 12pm)") @map("preferred_pickup_window")
+  ...
+}
+```
+### Command:
+$ npx prisma migrate dev --name make_window_required
+
+### Terminal Output:
+Applying migration `20261114062716_make_window_required`
+The following migration(s) have been created and applied from new schema changes:
+prisma/migrations/
+  └─ 20261114062716_make_window_required/
+    └─ migration.sql
+Your database is now in sync with your schema.
+
+### Generated DDL (`prisma/migrations/20261114062716_make_window_required/migration.sql`):
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_customers" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "full_name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "docket_number" INTEGER NOT NULL,
+    "claim_pin_hash" TEXT NOT NULL,
+    "password_hash" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'customer',
+    "email_verified" BOOLEAN NOT NULL DEFAULT false,
+    "verified_at" DATETIME,
+    "terms_accepted" BOOLEAN NOT NULL DEFAULT false,
+    "preferred_pickup_window" TEXT NOT NULL,
+    "deleted_at" DATETIME,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO "new_customers" ("claim_pin_hash", "created_at", "deleted_at", "docket_number", "email", "email_verified", "full_name", "id", "password_hash", "phone", "preferred_pickup_window", "role", "terms_accepted", "verified_at") SELECT "claim_pin_hash", "created_at", "deleted_at", "docket_number", "email", "email_verified", "full_name", "id", "password_hash", "phone", "preferred_pickup_window", "role", "terms_accepted", "verified_at" FROM "customers";
+DROP TABLE "customers";
+ALTER TABLE "new_customers" RENAME TO "customers";
+CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;

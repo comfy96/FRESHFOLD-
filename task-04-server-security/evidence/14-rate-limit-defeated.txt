@@ -1,0 +1,18 @@
+# Step 8: Rate Limiting Trigger & Defeat Evidence (evidence/14-rate-limit-defeated.txt)
+Target Route: POST /api/auth/login
+Threshold: 5 requests per 15-minute window per IP
+
+=== PHASE 1: Exhausting quota from IP 198.51.100.99 ===
+Request 1: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 4 | Retry-After: null
+Request 2: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 3 | Retry-After: null
+Request 3: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 2 | Retry-After: null
+Request 4: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 1 | Retry-After: null
+Request 5: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 0 | Retry-After: null
+Request 6: HTTP 429 | {"error":"Our records show too many sign-in attempts from this connection. Wait a few minutes before trying again."} | Remaining: 0 | Retry-After: 900
+
+=== PHASE 2: Defeating the IP rate limit by rotating IP ===
+Simulating network egress change (e.g. mobile data reconnect or proxy rotation)
+New IP address: 203.0.113.77
+Request from new IP 203.0.113.77: HTTP 401 | {"error":"Incorrect email or password."} | Remaining: 4
+
+RESULT: The 429 lockout was defeated immediately by rotating client IP, proving why IP-only rate limiting is insufficient and why production systems must key on target email and device fingerprints.

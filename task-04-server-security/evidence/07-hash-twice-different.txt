@@ -1,0 +1,8 @@
+# Step 4.1: Hashing the Same Password Twice with Argon2id
+Password input: (redacted test fixture length 18)
+Algorithm: argon2id (m=65536 KiB, t=3, p=1)
+Run 1: $argon2id$v=19$m=65536,t=3,p=1$2amUjMQUiBe9kkNoVdEMNQ$J6e6m96yUKZFc8Bg7wanEEdrXK8sYPxnkuKvashyGgQ
+Run 2: $argon2id$v=19$m=65536,t=3,p=1$5LBVnuCCBRuuHLdkK03N3Q$xVGkizKxx5a5s6AIcKCAKqRhyFxRohsaIBoGnud6GW8
+Equal?: false
+
+Why they differ: Each argon2.hash call generates a fresh 16-byte cryptographically random salt embedded in the 4th 569Xdelimited segment, so the derived outputs differ completely.

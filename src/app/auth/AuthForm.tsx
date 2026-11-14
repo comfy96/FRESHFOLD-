@@ -39,6 +39,10 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [disabledExplain, setDisabledExplain] = useState<string | null>(null);
   const [serverMsg, setServerMsg] = useState<string | null>(null);
+  const [verifyEmailTarget, setVerifyEmailTarget] = useState<string | null>(null);
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifyStatus, setVerifyStatus] = useState<string | null>(null);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
 
   useEffect(() => {
     setMode(initialMode);
@@ -50,6 +54,10 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
     setErrors({});
     setDisabledExplain(null);
     setServerMsg(null);
+    setVerifyEmailTarget(null);
+    setVerifyCode('');
+    setVerifyStatus(null);
+    setVerifyError(null);
     window.history.replaceState(null, '', `/auth?mode=${next}`);
   }
 
@@ -111,7 +119,23 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
       const passErr = !password ? 'Enter your password.' : '';
       setErrors({ email: emailErr, password: passErr });
       if (emailErr || passErr) return;
-      setServerMsg('Login flow will connect in Task 05.');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setServerMsg(`Signed in as ${data.fullName} (${data.email}).`);
+        } else {
+          setDisabledExplain(data.error || 'Could not sign in.');
+          if (data.fieldErrors) setErrors((prev) => ({ ...prev, ...data.fieldErrors }));
+        }
+      } catch {
+        setDisabledExplain('Connection dropped while checking your record. Please try again.');
+      }
       return;
     }
 
@@ -119,7 +143,22 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
       const emailErr = !/^\S+@\S+$/.test(email.trim()) ? 'Enter your account email.' : '';
       setErrors({ email: emailErr });
       if (emailErr) return;
-      setServerMsg('Reset flow will connect in Task 04/05.');
+
+      try {
+        const res = await fetch('/api/auth/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setServerMsg(data.message);
+        } else {
+          setDisabledExplain(data.error || 'Unable to process reset request.');
+        }
+      } catch {
+        setDisabledExplain('Connection dropped while requesting reset. Please try again.');
+      }
       return;
     }
 
@@ -143,22 +182,58 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
       return;
     }
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName,
-        email,
-        phone,
-        docketNumber: Number(docketNumber),
-        claimPin,
-        password,
-        termsAccepted,
-      }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setServerMsg(`Account #${data.accountId} created.`);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName,
+          email,
+          phone,
+          docketNumber: Number(docketNumber),
+          claimPin,
+          password,
+          termsAccepted,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setServerMsg(`Account #${data.accountId} created for ${data.email}.`);
+        if (data.verificationRequired) {
+          setVerifyEmailTarget(data.email);
+          setVerifyStatus(null);
+          setVerifyError(null);
+        }
+      } else {
+        setDisabledExplain(data.error || 'Registration could not be completed.');
+        if (data.fieldErrors) {
+          setErrors((prev) => ({ ...prev, ...data.fieldErrors }));
+        }
+      }
+    } catch {
+      setDisabledExplain('Network interrupted while saving your account. Please try again.');
+    }
+  }
+
+  async function handleVerifySubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!verifyEmailTarget) return;
+    setVerifyError(null);
+    setVerifyStatus(null);
+    try {
+      const res = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: verifyEmailTarget, code: verifyCode }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setVerifyStatus(data.message || 'Email verified.');
+      } else {
+        setVerifyError(data.error || 'Verification failed.');
+      }
+    } catch {
+      setVerifyError('Network interrupted while verifying code.');
     }
   }
 
@@ -443,6 +518,39 @@ export default function AuthForm({ initialMode }: { initialMode: AuthMode }) {
           </div>
         )}
       </form>
+
+      {verifyEmailTarget && (
+        <form onSubmit={handleVerifySubmit} className={styles.verifyBox} noValidate>
+          <div className={styles.fieldGroup}>
+            <label htmlFor="verifyCode" className={styles.label}>
+              Enter 6-digit verification code sent to {verifyEmailTarget}
+            </label>
+            <input
+              id="verifyCode"
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              className={`${styles.input} ${verifyError ? styles.inputError : ''}`}
+              value={verifyCode}
+              onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+            />
+            {verifyError && (
+              <div role="alert" className={styles.errorRow}>
+                <CautionIcon />
+                <span>{verifyError}</span>
+              </div>
+            )}
+          </div>
+          <button type="submit" className={styles.submitBtn}>
+            Verify email code
+          </button>
+          {verifyStatus && (
+            <div role="status" className={styles.statusSuccess}>
+              {verifyStatus}
+            </div>
+          )}
+        </form>
+      )}
     </div>
   );
 }

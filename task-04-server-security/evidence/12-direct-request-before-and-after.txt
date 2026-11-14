@@ -1,0 +1,54 @@
+# Step 7: Direct Request Attack Side-by-Side (`evidence/12-direct-request-before-and-after.txt`)
+
+*(The clearest single piece of evidence in the whole assessment: repeating the Task 3 direct attack and proving server-side enforcement.)*
+
+---
+
+## 1. The Exact Command Sent
+```bash
+curl -i -s -X POST http://localhost:3000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"fullName":"a","email":"not-an-email","phone":"1","docketNumber":0,"claimPin":"1","password":"1","termsAccepted":false}'
+```
+
+---
+
+## 2. Task Three Response (Before Server Hardening — Defenseless Endpoint)
+```http
+HTTP/1.1 201 Created
+content-type: application/json
+
+{"ok":true,"accountId":4,"received":{"fullName":"a","email":"not-an-email","phone":"1","docketNumber":0,"claimPin":"1","password":"1","termsAccepted":false}}
+```
+**Outcome in Task 3:** The unvalidated server inserted row `id = 4` directly into SQLite `customer_accounts`. All 8 client-side rules were bypassed completely because the request skipped the browser UI.
+
+---
+
+## 3. Task Four Response (After Server Hardening — Zod Boundary Schema)
+```http
+HTTP/1.1 400 Bad Request
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+Date: Sat, 14 Nov 2026 06:56:56 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"error":"Validation failed at server boundary.","fieldErrors":{"fullName":"Enter at least two name words separated by a space.","email":"Enter a valid email address (for example name@domain.com).","phone":"Enter an 11-digit Nigerian mobile number starting with 070, 080, 081, 090, or 091.","docketNumber":"Docket number must be 100 or higher.","claimPin":"Claim PIN must be 5 to 8 digits.","password":"Password must be at least 10 characters after trimming spaces.","termsAccepted":"Accept the Fresh Fold Laundry record-keeping terms before registering."}}
+```
+**Outcome in Task 4:** The server refused the request with **`HTTP 400 Bad Request`** before database access, Argon2 hashing, or verification token creation could execute. Zero unvalidated data entered SQLite.
+
+---
+
+## 4. Comparison Summary
+
+| Field | Value Sent | Task 3 Result | Task 4 Result | Rule Enforced |
+|---|---|---|---|---|
+| `fullName` | `"a"` | Stored in SQLite | Rejected (`400`) | At least 2 words separated by space, min 3 chars |
+| `email` | `"not-an-email"` | Stored in SQLite | Rejected (`400`) | Valid email format, lowercase normalized, max 254 chars |
+| `phone` | `"1"` | Stored in SQLite | Rejected (`400`) | 11-digit Nigerian mobile prefix (070/080/081/090/091) |
+| `docketNumber` | `0` | Stored in SQLite | Rejected (`400`) | Whole integer `>= 100` |
+| `claimPin` | `"1"` | Stored in SQLite | Rejected (`400`) | 5 to 8 digits, non-identical |
+| `password` | `"1"` | Stored plaintext in SQLite | Rejected (`400`) | Minimum 10 characters after `.trim()` |
+| `termsAccepted` | `false` | Stored in SQLite (`0`) | Rejected (`400`) | Literal `true` required |
+| **HTTP Status** | - | **`201 Created`** | **`400 Bad Request`** | **Server is the source of truth** |

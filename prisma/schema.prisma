@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id               Int                @id @default(autoincrement())
+  fullName         String             @map("full_name")
+  email            String             @unique
+  phone            String
+  docketNumber     Int                @map("docket_number")
+  claimPinHash     String             @map("claim_pin_hash")
+  passwordHash     String             @map("password_hash")
+  role             String             @default("customer")
+  emailVerified    Boolean            @default(false) @map("email_verified")
+  verifiedAt       DateTime?          @map("verified_at")
+  termsAccepted    Boolean            @default(false) @map("terms_accepted")
+  preferredPickupWindow String             @default("Morning (8am - 12pm)") @map("preferred_pickup_window")
+  deletedAt        DateTime?          @map("deleted_at")
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  sessions         Session[]
+  pickupRequests   PickupRequest[]
+  payments         Payment[]
+  paymentAttempts  PaymentAttempt[]
+  verificationCodes VerificationCode[]
+  ledgerChunks     LedgerChunk[]
+
+  @@map("customers")
+}
+
+model Session {
+  id         Int       @id @default(autoincrement())
+  customerId Int       @map("customer_id")
+  tokenHash  String    @unique @map("token_hash")
+  expiresAt  DateTime  @map("expires_at")
+  revokedAt  DateTime? @map("revoked_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@map("sessions")
+}
+
+model PickupRequest {
+  id           Int      @id @default(autoincrement())
+  customerId   Int?     @map("customer_id")
+  customerName String   @map("customer_name")
+  phone        String
+  docketNumber Int?     @map("docket_number")
+  itemCount    Int      @map("item_count")
+  serviceMode  String   @map("service_mode")
+  notes        String   @default("")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([customerId, createdAt])
+  @@map("pickup_requests")
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  customerId   Int      @map("customer_id")
+  docketNumber Int      @map("docket_number")
+  amountKobo   Int      @map("amount_kobo")
+  currency     String   @default("NGN")
+  channel      String
+  providerRef  String   @unique @map("provider_ref")
+  paidAt       DateTime @map("paid_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@index([customerId, paidAt])
+  @@map("payments")
+}
+
+model PaymentAttempt {
+  id             Int      @id @default(autoincrement())
+  customerId     Int?     @map("customer_id")
+  docketNumber   Int      @map("docket_number")
+  amountKobo     Int      @map("amount_kobo")
+  status         String
+  failureReason  String?  @map("failure_reason")
+  idempotencyKey String   @unique @map("idempotency_key")
+  attemptedAt    DateTime @default(now()) @map("attempted_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([customerId, attemptedAt])
+  @@map("payment_attempts")
+}
+
+model VerificationCode {
+  id         Int       @id @default(autoincrement())
+  customerId Int       @map("customer_id")
+  purpose    String    @default("email_verify")
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at")
+  usedAt     DateTime? @map("used_at")
+  attempts   Int       @default(0)
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, createdAt])
+  @@map("verification_codes")
+}
+
+model LedgerChunk {
+  id         Int      @id @default(autoincrement())
+  customerId Int?     @map("customer_id")
+  sourceType String   @map("source_type")
+  sourceId   Int?     @map("source_id")
+  content    String
+  tokenCount Int      @map("token_count")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, sourceType])
+  @@map("ledger_chunks")
+}
+
