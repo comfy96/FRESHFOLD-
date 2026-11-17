@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { loginSchema } from '@/lib/validation/auth';
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limit';
-import { verifySecret } from '@/lib/security/password';
+import { verifySecret, DUMMY_ARGON2_HASH } from '@/lib/security/password';
+import { createSession, getSessionCookieOptions } from '@/lib/security/session';
 
 export async function POST(request: Request) {
   const clientIp = getClientIp(request.headers);
@@ -54,14 +55,15 @@ export async function POST(request: Request) {
         fullName: true,
         email: true,
         passwordHash: true,
+        role: true,
         emailVerified: true,
         deletedAt: true,
       },
     });
 
-    const passwordMatches = customer
-      ? await verifySecret(customer.passwordHash, data.password)
-      : false;
+    // Enforce constant-time timing: always execute Argon2id verify even if email does not exist
+    const hashToVerify = customer ? customer.passwordHash : DUMMY_ARGON2_HASH;
+    const passwordMatches = await verifySecret(hashToVerify, data.password);
 
     if (!customer || !passwordMatches || customer.deletedAt) {
       return NextResponse.json(
@@ -76,12 +78,17 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json(
+    // Create cryptographically secure session (256-bit entropy, stored as SHA-256 hash)
+    const session = await createSession(customer.id);
+    const cookieOpts = getSessionCookieOptions(session.expiresAt);
+
+    const response = NextResponse.json(
       {
         ok: true,
         accountId: customer.id,
         fullName: customer.fullName,
         email: customer.email,
+        role: customer.role,
         emailVerified: customer.emailVerified,
       },
       {
@@ -92,6 +99,18 @@ export async function POST(request: Request) {
         },
       }
     );
+
+    response.cookies.set({
+      name: cookieOpts.name,
+      value: session.rawToken,
+      httpOnly: cookieOpts.httpOnly,
+      secure: cookieOpts.secure,
+      sameSite: cookieOpts.sameSite,
+      path: cookieOpts.path,
+      expires: cookieOpts.expires,
+    });
+
+    return response;
   } catch {
     return NextResponse.json(
       { error: 'Unable to check credentials right now.' },

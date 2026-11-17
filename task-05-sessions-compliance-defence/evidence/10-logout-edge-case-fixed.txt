@@ -1,0 +1,29 @@
+# Evidence 10: Logout Edge Case Fixed (Zero-Lie Defensive Architecture)
+# Business: Fresh Fold Laundry
+# Date: 2026-11-17
+
+=== HARDENED IMPLEMENTATION IN LogoutButton.tsx ===
+1. Awaits Server Acknowledgment: The client DOES NOT transition state prematurely.
+2. Network Failure Trapped & Reported: If network drops, an accessible role="alert" banner
+   informs the customer: "The shop server could not be reached to delete your active session row.
+   Your session may still be active in the ledger. Please check your internet or tap Retry."
+3. Dual-Action Recovery: Customer is provided [Retry Logout] and [Force Leave Anyway].
+4. Successful Retry Execution:
+
+Step 1: Network connectivity restored; Customer triggers Retry Logout against live server:
+   HTTP Status: 200
+   Server Response Payload: {"ok":true,"message":"Our records show you have been logged out safely.","serverRevoked":true}
+   Set-Cookie Expiry Header: freshfold_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=lax
+
+Step 2: Database Row Check after Successful Retry:
+   Querying sessions table for token_hash: ad56920e14375b26a9e6c8c18c0c1ed34cc20027dbaf57747161bf11227a2444
+   Row exists in SQLite?: false (NULL / Deleted)
+
+Step 3: Accessing /orders with the revoked cookie:
+   HTTP Status on /orders: 307 (Redirect to /auth)
+   Redirect Target: /auth?mode=login&from=/orders
+
+=== ARCHITECTURAL VERDICT ===
+Fresh Fold eliminates the logout illusion. Under flaky Nigerian cellular coverage,
+customers are never falsely informed that their private records are closed until the
+server cryptographically destroys the active session row in SQLite.

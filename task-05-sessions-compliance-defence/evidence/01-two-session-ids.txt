@@ -1,0 +1,118 @@
+# Evidence 01: Two Distinct Session IDs and Token Hashing Proof
+# Location: task-05-sessions-compliance-defence/evidence/01-two-session-ids.txt
+# Business: Fresh Fold Laundry
+# Target User: Emeka Okafor (Customer ID 2, emeka.okafor@freshfold.ng)
+# Date: 2026-11-17
+
+---
+
+## 1. Overview & Verification Goal
+Prove that logging in twice for the same user creates two distinct, independent session records in SQLite, each with:
+1. A cryptographically secure 256-bit random entropy token delivered only to the client in the `freshfold_session` cookie.
+2. A one-way SHA-256 hash stored in the database `sessions.token_hash` column (raw tokens are NEVER persisted in SQLite).
+3. Independent session IDs and independent expiry timestamps.
+
+---
+
+## 2. Live HTTP Request & Response 1
+Command:
+```bash
+curl -i -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"emeka.okafor@freshfold.ng","password":"ThreeCleanShirts401!"}'
+```
+
+Response Headers & Payload:
+```http
+HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+set-cookie: freshfold_session=365fc3c2f0863729f98d2e697375829e291c2dd24cdb35efef7f3796014af07d; Path=/; Expires=Tue, 24 Nov 2026 12:21:17 GMT; HttpOnly; SameSite=lax
+x-ratelimit-limit: 5
+x-ratelimit-remaining: 4
+Date: Tue, 17 Nov 2026 12:21:17 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":true,"accountId":2,"fullName":"Emeka Okafor","email":"emeka.okafor@freshfold.ng","role":"customer","emailVerified":true}
+```
+
+Raw Cookie 1:
+`freshfold_session=365fc3c2f0863729f98d2e697375829e291c2dd24cdb35efef7f3796014af07d`
+
+---
+
+## 3. Live HTTP Request & Response 2 (Immediate Second Login)
+Command:
+```bash
+curl -i -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"emeka.okafor@freshfold.ng","password":"ThreeCleanShirts401!"}'
+```
+
+Response Headers & Payload:
+```http
+HTTP/1.1 200 OK
+vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+content-type: application/json
+set-cookie: freshfold_session=8a92e4a609d4e4b7fcf1c59bdd868492e7c80f1725502399e65cf222b2e796f4; Path=/; Expires=Tue, 24 Nov 2026 12:24:14 GMT; HttpOnly; SameSite=lax
+x-ratelimit-limit: 5
+x-ratelimit-remaining: 3
+Date: Tue, 17 Nov 2026 12:24:14 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"ok":true,"accountId":2,"fullName":"Emeka Okafor","email":"emeka.okafor@freshfold.ng","role":"customer","emailVerified":true}
+```
+
+Raw Cookie 2:
+`freshfold_session=8a92e4a609d4e4b7fcf1c59bdd868492e7c80f1725502399e65cf222b2e796f4`
+
+---
+
+## 4. SQLite Database `sessions` Table Verification
+Database Query:
+```sql
+SELECT id, customer_id, token_hash, created_at, expires_at FROM sessions WHERE customer_id = 2 ORDER BY id ASC;
+```
+
+Returned Rows:
+- Row 1:
+  - id: 1
+  - customer_id: 2
+  - token_hash: c6ff6f9045b6b5303519047696e5a4b32be98de863dcb73397258262b231a3a4
+  - created_at: 2026-11-17T12:21:17.632Z
+  - expires_at: 2026-11-24T12:21:17.630Z
+- Row 2:
+  - id: 2
+  - customer_id: 2
+  - token_hash: 797eaf2ba4e304db90b75c3402f0ef2313098877583f5abd000c99ea6ce73673
+  - created_at: 2026-11-17T12:24:14.316Z
+  - expires_at: 2026-11-24T12:24:14.315Z
+
+---
+
+## 5. Cryptographic Proof: SHA-256 One-Way Hash Verification
+To prove the raw session tokens in the browser cookies map 1-to-1 to the hashed database columns:
+
+```typescript
+// Verification in Node.js
+const crypto = require('crypto');
+
+const cookie1 = '365fc3c2f0863729f98d2e697375829e291c2dd24cdb35efef7f3796014af07d';
+const hash1 = crypto.createHash('sha256').update(cookie1).digest('hex');
+// Result: c6ff6f9045b6b5303519047696e5a4b32be98de863dcb73397258262b231a3a4
+// Matches SQLite sessions row id=1 token_hash exactly: TRUE
+
+const cookie2 = '8a92e4a609d4e4b7fcf1c59bdd868492e7c80f1725502399e65cf222b2e796f4';
+const hash2 = crypto.createHash('sha256').update(cookie2).digest('hex');
+// Result: 797eaf2ba4e304db90b75c3402f0ef2313098877583f5abd000c99ea6ce73673
+// Matches SQLite sessions row id=2 token_hash exactly: TRUE
+```
+
+## 6. Architectural Conclusion
+1. Two consecutive logins produced two completely distinct session tokens (256 bits of entropy each).
+2. Storing raw tokens in SQLite is strictly avoided; an adversary reading a database backup cannot impersonate active sessions without inverting SHA-256.
+3. Cookies are delivered with `HttpOnly` (preventing XSS session extraction) and `SameSite=Lax` (preventing CSRF session transmission on cross-origin state-changing requests).

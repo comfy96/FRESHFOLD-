@@ -1,0 +1,16 @@
+# Evidence 14: Scheduled Account Purge Job (Run Two - Idempotency Verification)
+# Business: Fresh Fold Laundry
+# Job ID: purge-1794919734486-780ee7
+# Started At: 2026-11-17T12:48:54.486Z
+# Cutoff Threshold: 2026-11-17T12:48:54.481Z
+
+=== PURGE JOB LOGS ===
+[2026-11-17T12:48:54.486Z] [purge-1794919734486-780ee7] START: Purge job initiated. Cutoff threshold: 2026-11-17T12:48:54.481Z
+[2026-11-17T12:48:54.486Z] [purge-1794919734486-780ee7] DISCOVERY: Found 0 customer account(s) ready for statutory purge & PII anonymisation.
+[2026-11-17T12:48:54.486Z] [purge-1794919734486-780ee7] FINISH: Purge job complete. Eligible: 0, Processed: 0, Payments Preserved: 0.
+
+=== IDEMPOTENCY PROOF ===
+Eligible Accounts Found on Second Run: 0 (Expected: 0)
+Accounts Processed: 0
+Verdict: The deletion job is strictly idempotent. Repeated execution over identical
+database state causes zero errors, mutates zero already-purged records, and safely exits.

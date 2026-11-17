@@ -1,0 +1,27 @@
+# Evidence 09: Logout Network Failure Edge Case (The Client-Side Illusion)
+# Business: Fresh Fold Laundry
+# Date: 2026-11-17
+
+=== SCENARIO DESCRIPTION ===
+Amaka Obi is at the counter on intermittent 2G mobile data. She taps "Log out".
+In a naive client-only SPA, the browser optimistically deletes local state and renders
+"Logged Out Successfully". But during network transit, cellular data drops and
+the POST /api/auth/logout request never reaches the backend.
+
+1. Active Session Created in SQLite:
+   Raw Token: f5473638b20074f3d3aa...
+   Database token_hash: ad56920e14375b26a9e6c8c18c0c1ed34cc20027dbaf57747161bf11227a2444
+   Database Row ID: 7 | Created At: 2026-11-17T12:38:09.913Z
+
+2. Network Failure Simulation during POST /api/auth/logout:
+   Simulating unreachable shop server (e.g. timeout / connection abort / radio drop)...
+   FETCH FAILED WITH ERROR: TypeError - fetch failed
+
+3. Post-Failure Database Inspection:
+   Is session row still alive in SQLite?: true
+   Session Row ID: 7 | Expires: 2026-11-24T12:38:09.912Z
+
+4. THE FATAL DEFECT IN NAIVE CODE:
+   If the client UI blindly executes `isLoggedIn = false` and navigates to the homepage,
+   the UI is LYING to the customer. The session row is still active on the server.
+   If a secondary actor uses the cached cookie or token, full ledger access remains open!

@@ -1,0 +1,41 @@
+# Evidence 06: Two Users in One Browser (Session Isolation & Cache Protection)
+# Date: 2026-11-17
+# Tested endpoints: POST /api/auth/login, GET /orders, POST /api/auth/logout
+
+=== STEP 1: User 1 (Amaka Obi) signs in ===
+Login 1 Status: 200
+User 1 Data: {"ok":true,"accountId":1,"fullName":"Amaka Obi","email":"amaka@freshfold.ng","role":"customer","emailVerified":false}
+Set-Cookie Header 1: freshfold_session=c098edb3926bb4369018122058d7337da91d029577dccc10c8dae9f348764c0b; Path=/; Expires=Tue, 24 Nov 2026 12:36:58 GMT; HttpOnly; SameSite=lax 
+
+=== STEP 2: User 1 accesses /orders with Cookie 1 ===
+Orders 1 HTTP Status: 200
+Cache-Control Header: no-store, must-revalidate
+Contains Amaka Obi: true
+Contains Docket #400: true
+Contains Emeka Okafor: false 
+
+=== STEP 3: User 2 (Emeka Okafor) signs in (Overwrites browser cookie jar) ===
+Login 2 Status: 200
+User 2 Data: {"ok":true,"accountId":2,"fullName":"Emeka Okafor","email":"emeka.okafor@freshfold.ng","role":"customer","emailVerified":true}
+Set-Cookie Header 2: freshfold_session=3aa34e8bdae62531dbec335609f76a293a093c87c7aa2f56498e81efff7312aa; Path=/; Expires=Tue, 24 Nov 2026 12:36:58 GMT; HttpOnly; SameSite=lax 
+
+=== STEP 4: Browser accesses /orders with updated Cookie 2 ===
+Orders 2 HTTP Status: 200
+Contains Emeka Okafor: true
+Contains Docket #401: true
+Contains Amaka Obi (Data Leakage Check): false 
+
+=== STEP 5: User 2 logs out via POST /api/auth/logout ===
+Logout Status: 200
+Logout Payload: {"ok":true,"message":"Our records show you have been logged out safely.","serverRevoked":true}
+Clear Cookie Header: freshfold_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; SameSite=lax 
+
+=== STEP 6: Browser requests /orders after logout (No cookie) ===
+Response Status (Expected 307 Redirect): 307
+Redirect Location: /auth?mode=login&from=/orders 
+
+=== VERIFICATION SUMMARY ===
+1. Multi-user cookie overwrite isolates sessions cleanly in single-cookie browser jars.
+2. Scoped database queries prevent User 2 from seeing User 1 items (Contains Amaka Obi on User 2 request: false).
+3. Cache-Control: no-store, must-revalidate ensures browser Back button does not serve stale cached private records.
+4. Logout revokes server session and instructs browser to expire cookie immediately (Max-Age=0).

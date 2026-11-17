@@ -8,6 +8,10 @@ const ARGON2_OPTIONS = {
   raw: false as const,
 };
 
+/** A valid precomputed Argon2id hash with identical parameters (64 MiB, t=3, p=1) used for constant-time verification against nonexistent users. */
+export const DUMMY_ARGON2_HASH =
+  '$argon2id$v=19$m=65536,t=3,p=1$7ecv8MV5j5rF9pIQgVw/PQ$eTbsqaNhxan3vI9L3j63iYenvORbFcqpPd5MkTDTJR4';
+
 /** Hash a user-supplied secret (password or claim PIN) with trimmed leading/trailing whitespace and unique CSPRNG salt. */
 export async function hashSecret(raw: string): Promise<string> {
   return argon2.hash(raw.trim(), ARGON2_OPTIONS);

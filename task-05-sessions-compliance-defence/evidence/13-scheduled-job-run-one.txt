@@ -1,0 +1,16 @@
+# Evidence 13: Scheduled Account Purge Job (Run One - Processing Purges)
+# Business: Fresh Fold Laundry
+# Job ID: purge-1794919734481-1ae289
+# Started At: 2026-11-17T12:48:54.481Z
+# Cutoff Threshold: 2026-11-17T12:48:54.481Z
+
+=== PURGE JOB LOGS ===
+[2026-11-17T12:48:54.481Z] [purge-1794919734481-1ae289] START: Purge job initiated. Cutoff threshold: 2026-11-17T12:48:54.481Z
+[2026-11-17T12:48:54.484Z] [purge-1794919734481-1ae289] DISCOVERY: Found 1 customer account(s) ready for statutory purge & PII anonymisation.
+[2026-11-17T12:48:54.485Z] [purge-1794919734481-1ae289] PROCESSED: Customer ID=4 PII anonymised. Retained 1 payment transaction(s) for statutory tax audit.
+[2026-11-17T12:48:54.485Z] [purge-1794919734481-1ae289] FINISH: Purge job complete. Eligible: 1, Processed: 1, Payments Preserved: 1.
+
+=== STATUTORY VERIFICATION ===
+Eligible Accounts Found: 1
+Accounts Anonymized: 1
+Financial Payment Transactions Preserved (CAMA 2020 / FIRS): 1
