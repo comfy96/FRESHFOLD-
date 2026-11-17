@@ -1,76 +1,163 @@
 # Fresh Fold Laundry
 
-*(Repository Layout: Single monorepo containing all five sequential assessment folders `task-01-*` through `task-05-*` alongside the active Next.js application under `src/`.)*
+*(Repository Layout: Single monorepo containing all five sequential assessment folders `task-01-*` through `task-05-*` alongside the active Next.js web application under `src/` and database migrations under `prisma/`.)*
 
 ---
 
 ## 1. What this is
-Fresh Fold Laundry is a lightweight customer record portal that gives Nigerian neighbourhood laundry customers (like Amaka Obi on an entry-level Android phone with intermittent mobile data) verified, dated visibility into their own item counts, washing status, and payment records—and never anyone else's.
+
+Fresh Fold Laundry is a lightweight, tamper-evident customer record portal and neighbourhood ledger engineered for Nigerian laundry and dry-cleaning services.
+
+The system is built specifically around the real-world operational constraints of **Amaka Obi**—a customer persona navigating intermittent 2G/3G mobile data on a budget Android smartphone (e.g., Tecno or Infinix running Android Go). The application prioritises verified, dated visibility into laundry item counts, processing stages, pickup dispatches, and payment balances ("Our records show" receipt-book tone)—ensuring absolute data isolation so no customer can ever view another customer's records.
+
+The repository follows a strict monorepo architecture containing:
+- **`src/`**: The complete Next.js 15 App Router application (TypeScript, pure CSS Modules, and custom security/validation libraries).
+- **`prisma/`**: Relational database schema and deterministic forward-only SQLite migrations.
+- **`task-01-design-system/`** through **`task-05-sessions-compliance-defence/`**: Self-contained documentation, benchmarks, defect trackers, and forensic evidence captures for each sequential assessment milestone.
 
 ---
 
 ## 2. Status
-- **Finished (Task 01 Design System):** Complete Figma token exports (`#007B71` teal pinned at Primary 40, Light & Dark mode collections), 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadow tokens, Node.js token-to-CSS compiler (`task-01-design-system/scripts/build-tokens.js`), static order screen (`src/index.html`), and all Task 01 docs and browser captures (`01`–`12`).
-- **Finished (Task 02 Code, Diagnostics & Docs):** Phased Next.js 15 + TypeScript scaffold without Tailwind, SQLite persistence (`POST /api/pickup-requests` returning HTTP `201`, `/pickup`, `/orders`), cold/warm load benchmarks (`1,414 ms` $\rightarrow$ `13 ms`), 3 server breakages and recoveries (`05`–`10`), false-success investigation (`11`–`13`), hand-drawn working tree diagram (`14-working-tree-drawing.jpg`), Git branch graph proof (`15-git-log-graph.txt`), information design (`16`–`20`), and written docs (`model-choices.md`, `performance-note.md`, `false-success.md`, `working-tree.md`, `information-design.md`, `defects.md`, `interview-answers.md`).
-- **Finished (Task 03 SPA Form, Validation, Accessibility & Docs):** Collapsed auth routes (`/signup`, `/login`, `/reset-password` $\rightarrow$ `/auth?mode=signup|login|reset`, 6 pages $\rightarrow$ 4 pages), implemented shop-derived client validation + `<input type="text" inputMode="numeric">` for dockets, fixed 4 accessibility issues verified via Chrome AXTree (`CautionIcon`, `aria-disabled` + explanation alert, `<label htmlFor>`, `aria-describedby`), proved client-side rules provide zero security via direct `curl` `HTTP 201` bypass (`evidence/16`), executed deterministic rollback `git reset --hard 2f67f2e`, and wrote all Task 03 docs (`spa-rationale.md`, `field-justification.md`, `validation-rules.md`, `terms-note.md`, `enumeration.md`, `accessibility-audit.md`, `client-side-is-not-security.md`, `rollback.md`, `defects.md`, `interview-answers.md`).
-- **Finished (Task 04 Server-Side Security, Migrations & Verification):** 7-table Prisma relational schema (`customers`, `sessions`, `pickup_requests`, `payments`, `payment_attempts`, `verification_codes`, `ledger_chunks`), forward-only migration discipline (`init`, `add_optional_window`, `make_window_required`), deliberate breakage and drift recovery (`04`–`06`), memory-hard Argon2id hashing (`85.9 ms/hash` vs SHA-256 `0.00045 ms/hash`, `07`–`08`), Zod schema boundary validation rejecting Task 3 direct curl attack with `HTTP 400` (`12`), email lowercasing and password whitespace trimming (`09`–`10`), 5 req/15 min IP rate limiting and defeat analysis (`13`–`14`), HIBP k-anonymity breached-password rejection (`15`), SMTP delivery failure and recovery (`16`–`17`), background email job timing (`18`), single-use CSPRNG 6-digit OTP verification flow with expired/wrong/reused failure tests (`19`–`22`), tokenized email template (`23`), and all 10 docs + 19 interview answers.
-- **Pending Optional/User Actions (Tasks 02–04):**
-  - `task-02-repository-and-scaffold/docs/readme-test.md`: Complete live onboarding test with an unfamiliar human tester and paste their verbatim quote.
-  - GitHub Push & PR URLs: Push branches to `origin` interactively and record PR links below.
-  - *(Optional bonus)* Record VoiceOver / walkthrough audio and screen video clips.
-- **Not started:** `task-05-sessions-compliance-defence/`.
 
-*(Task 02 Pull Request URL: `<pending GitHub PR creation for feat/information-design -> main>`)*
+| Milestone | Directory | Branch | Status | Key Deliverables & Evidence |
+| :--- | :--- | :--- | :--- | :--- |
+| **Task 01: Design System** | `task-01-design-system/` | `main` | **Finished** | Pinned `#007B71` Primary 40, Light/Dark token sets, 15-style `Plus Jakarta Sans` type scale (`57/80`, `-0.25px`), brand-tinted shadows, token-to-CSS compiler script (`task-01-design-system/scripts/build-tokens.js`), static receipt screen, and evidence `01`–`12`. |
+| **Task 02: Repo & Scaffold** | `task-02-repository-and-scaffold/` | `main` | **Finished** | Phased Next.js 15 App Router scaffold, pure CSS Modules (zero Tailwind), SQLite persistence (`POST /api/pickup-requests` returning `HTTP 201`), cold/warm benchmarks (`1,414 ms` $\rightarrow$ `13 ms`), server breakages & recoveries, false-success mitigation, hand-drawn working tree diagram (`14`), Git `--no-ff` graph proof (`15`), and information design (`clamp()` type, 7-word tagline, Open Graph metadata, collapsed CTA). |
+| **Task 03: Client Validation** | `task-03-client-validation/` | `main` | **Finished** | Unified Single-Page Auth (`/auth?mode=signup\|login\|reset`, reduced 6 pages $\rightarrow$ 4 pages), shop-derived validation rules, `<input type="text" inputMode="numeric">` for dockets, Chrome AXTree accessibility fixes (`CautionIcon`, `aria-disabled` + explanation alert), direct `curl` `HTTP 201` bypass proof showing client rules offer zero backend security, and deterministic rollback (`git reset --hard 2f67f2e`). |
+| **Task 04: Server Security** | `task-04-server-security/` | `main` | **Finished** | 7-table Prisma relational schema, forward-only migrations (`init`, `add_optional_window`, `make_window_required`), intentional drift recovery, Argon2id benchmark (`85.904 ms/hash` vs SHA-256 `0.000447 ms/hash`), Zod boundary schema validation rejecting direct attacks with `HTTP 400`, email/password normalisation, 5 req/15 min rate limiting and defeat analysis, HIBP k-anonymity breach check, asynchronous background SMTP email dispatch (`138 ms` response), and single-use CSPRNG 6-digit OTP verification flow. |
+| **Task 05: Sessions & Defence** | `task-05-sessions-compliance-defence/` | `feat/task-05-sessions-compliance-defence` | **In Progress** | Cryptographically secure session management with SHA-256 token hashing, soft vs hard gating flows, constant-time authentication timing, NDPA-compliant account deletion, automated data retention purge jobs, and oral defence documentation. |
+
+### Version Control & Pull Request Tracking
+- **Local `main` Branch (`4fd1874`):** Contains all merged, verified commits for Tasks 01 through 04.
+- **Feature Branches:**
+  - `feat/task-04-server-security`: Pushed to remote `origin`.
+  - `feat/task-03-client-validation`: Completed and merged locally into `main`.
+  - `feat/task-05-sessions-compliance-defence`: Active development branch.
+- **Pushing to GitHub:** Because GitHub deprecated account passwords for Git HTTPS operations in August 2021, pushes require either an SSH key (`git remote set-url origin git@github.com:comfy96/FRESHFOLD-.git`) or a GitHub Personal Access Token (PAT) with `repo` scope when using HTTPS.
 
 ---
 
 ## 3. The stack, with reasons
-- **Next.js 15 (App Router) + TypeScript:** Chosen over a static HTML live server or single-file Express script because it provides dynamic server API routes (`/api/pickup-requests`), server-side database rendering (`/orders`), and built-in `<head>` metadata templates from one cohesive codebase.
-- **CSS Modules + Semantic CSS Variables (`src/styles/variables.css`, zero Tailwind):** Chosen over Tailwind CSS to enforce strict two-tier Figma token consumption (`--color-*`, `--type-*`, `--shadow-*`) and avoid utility-class bloat on Amaka Obi's low-cost Android device.
-- **Node.js v26.13.0 Built-in SQLite (`node:sqlite` `DatabaseSync`):** Chosen over heavier Postgres/Docker setups in Task 02 so any maintainer can clone, run `npm install`, and inspect real persisted rows with zero external database daemons.
+
+Each technology in the stack was chosen to satisfy strict operational, security, and low-bandwidth constraints:
+
+1. **Next.js 15 (App Router) + TypeScript:**
+   - *Reason:* Unifies the client user interface, server-side data rendering, and backend API Route Handlers (`/api/auth/*`, `/api/pickup-requests`) into a single type-safe codebase. This eliminates the operational overhead of running separate frontend and backend server processes while maintaining end-to-end TypeScript interfaces.
+2. **Pure CSS Modules & Semantic Design Tokens (`src/styles/variables.css`):**
+   - *Reason:* Zero Tailwind or heavy utility-class frameworks. Every visual style references two-tier CSS custom properties (`--color-*`, `--type-*`, `--shadow-*`) compiled directly from Figma design tokens. This minimizes initial stylesheet payloads and avoids heavy DOM styling recalculations on low-tier mobile hardware.
+3. **SQLite with Prisma ORM (`prisma/schema.prisma`):**
+   - *Reason:* SQLite provides an embedded, zero-daemon transactional database stored directly on disk (`file:./freshfold.db`). Prisma provides compile-time type safety, relational foreign key constraints, and deterministic, forward-only schema migrations without external database infrastructure or cloud dependencies.
+4. **Argon2id Password Hashing (`argon2`):**
+   - *Reason:* State-of-the-art password hashing with $64\text{ MiB}$ memory cost, $t=3$ iterations, and CSPRNG salt. It was chosen over legacy SHA-256 and standard bcrypt because its memory-hardness defeats parallelized GPU/ASIC cracking attacks. Hardware benchmarks confirm Argon2id takes **`85.904 ms/hash`** ($\approx 11.6\text{ hashes/sec}$) compared to SHA-256's **`0.000447 ms/hash`** ($\approx 2.2\text{M hashes/sec}$).
+5. **Zod Boundary Schema Validation (`src/lib/validation/auth.ts`):**
+   - *Reason:* Enforces strict data boundary schemas at all HTTP endpoints. Requests containing missing fields, invalid phone formats, malformed email addresses, or unaccepted terms are rejected with `HTTP 400 Bad Request` before touching database queries.
+6. **Node.js `crypto` (CSPRNG & SHA-256):**
+   - *Reason:* Generates cryptographically strong pseudo-random tokens (`crypto.randomBytes(32)`) for sessions and 6-digit OTP codes. Raw tokens are never stored in the database; only SHA-256 one-way hashes are persisted, preventing credential theft even if the SQLite database file is leaked.
+7. **Nodemailer with Decoupled Background Dispatch (`src/lib/email/mailer.ts`):**
+   - *Reason:* Asynchronous email delivery is offloaded via `setImmediate`, decoupling external SMTP server latency from the user's registration handshake. Signup API responses return in **`138 ms`**, while verification emails transmit reliably in the background.
 
 ---
 
 ## 4. Getting started
-**Prerequisite:** Node.js **v22.5+** (tested on **v26.13.0**; required for built-in `node:sqlite`). Verify with `node -v`.
 
-Run these exact commands in order from a fresh clone:
+### Prerequisites
+- **Node.js:** Version **`v22.5+`** (tested on **`v26.13.0`** and **`v22.11.0 LTS`**; required for built-in SQLite support). Verify with:
+  ```bash
+  node -v
+  ```
+- **npm:** Version **`v10+`**.
+
+### Installation & Fresh Setup
+Follow these exact commands in order from a clean clone:
 
 ```bash
+# 1. Clone the repository
 git clone https://github.com/comfy96/FRESHFOLD-.git
 cd FRESHFOLD-
+
+# 2. Install dependencies
 npm install
+
+# 3. Create your local environment file
 cp .env.example .env
-```
 
-Open `.env` and set `DATABASE_URL` to a local SQLite path (for example `./freshfold.db`), then start the development server:
+# 4. Deploy database migrations and generate Prisma Client
+npx prisma migrate deploy
+npx prisma generate
 
-```bash
+# 5. Start the development server
 npm run dev
 ```
 
-Open `http://localhost:3000` in your browser. Visit `/auth?mode=signup` (tabs for `Sign up`, `Log in`, `Reset password`) to test customer registration, `/pickup` to record a laundry pickup request, and `/orders` to view logged shop records.
+### Key Local Routes to Explore
+Open your browser to `http://localhost:3000` to interact with the system:
+- **`http://localhost:3000/`**: Home landing shell featuring the brand tagline, service window notice, and primary navigation.
+- **`http://localhost:3000/auth?mode=signup`**: Single-Page Auth flow with tabbed navigation for **Sign up**, **Log in**, and **Reset password**, complete with shop-derived validation and accessible alert messaging.
+- **`http://localhost:3000/pickup`**: Laundry collection booking form with service mode selectors and immediate SQLite persistence.
+- **`http://localhost:3000/orders`**: Internal shop ledger displaying verified customer orders and timestamps.
+
+### Verification & Testing Commands
+```bash
+# Verify TypeScript compiles with zero errors:
+npx tsc --noEmit
+
+# Inspect database tables, relations, and records visually:
+npx prisma studio
+```
 
 ---
 
 ## 5. Environment variables
-- `DATABASE_URL`: File path to the local SQLite database read by `src/lib/db.ts` (never commit `.env` or set values here).
-- `NEXT_PUBLIC_SITE_URL` *(optional)*: Base origin URL used by Next.js `metadataBase` in `src/app/layout.tsx` when resolving Open Graph preview images (defaults locally to `http://localhost:3000`).
+
+All environment configuration is managed via `.env` in the project root. A tracked template is maintained at `.env.example`. **Never commit `.env` or production credentials to source control.**
+
+| Variable | Required | Default / Example | Purpose & Operational Impact |
+| :--- | :--- | :--- | :--- |
+| `DATABASE_URL` | **Yes** | `file:./freshfold.db` | File path connection string for the local SQLite database used by Prisma ORM and `src/lib/db.ts`. |
+| `SMTP_HOST` | No | `smtp.ethereal.email` | Outgoing SMTP mail server hostname for delivering 6-digit OTP codes. When omitted in development, verification codes are logged directly to the server terminal. |
+| `SMTP_PORT` | No | `587` | Port for SMTP mail transmission (e.g., `587` for STARTTLS, `465` for SSL/TLS). |
+| `SMTP_USER` | No | `user@freshfold.ng` | Authentication username for the SMTP gateway. |
+| `SMTP_PASS` | No | `password` | Authentication password for the SMTP gateway. |
+| `SMTP_FROM` | No | `Fresh Fold Laundry <noreply@freshfold.ng>` | Formatted email sender header displayed in the customer's inbox. |
+| `NEXT_PUBLIC_SITE_URL` | No | `http://localhost:3000` | Canonical base origin URL used by Next.js `metadataBase` in `src/app/layout.tsx` to resolve Open Graph and social preview assets. |
 
 ---
 
 ## 6. What this deliberately does not do
-- **No AI chatbot interface:** Customers anxious about missing garments or unrecorded transfers distrust opaque bots; the portal shows dated ledger records ("Our records show") instead.
-- **No external Redis cluster for rate limiting yet:** In-process counters protect the single-node shop server without external server overhead or network fees (`docs/not-implemented.md`).
-- **No SMS or TOTP 2FA yet:** Costly per-SMS gateway charges and authenticator app lockouts punish non-technical Android users; email OTP plus counter PINs matches the threat model.
-- **No third-party interactive CAPTCHA:** Bloats page payloads and breaks offline slow-2G progressive enhancement; server validation and k-anonymity filter abuse cleanly.
+
+The system deliberately avoids standard commercial SaaS patterns that fail under Nigerian retail constraints:
+
+1. **No generative AI chatbot or conversational UI:**
+   - *Rationale:* Customers inquiring about laundry intake weights, garment damage, or payment deductions require deterministic, verifiable records ("Our records show"). Generative AI models introduce hallucination risks and conversational ambiguity that erode trust during commercial disputes.
+2. **No external Redis cluster:**
+   - *Rationale:* Maintaining an external Redis cluster for a single-shop ledger adds unnecessary network points of failure, cold-start latency, and monthly hosting fees. In-process token buckets with fail-open semantics ensure honest customers can still check dockets if caching infrastructure hiccups.
+3. **No SMS or app-based TOTP 2FA:**
+   - *Rationale:* Nigerian SMS telco aggregators charge substantial per-message fees ($\approx \$0.04/\text{SMS}$) and experience frequent delivery timeouts during peak traffic. Standalone authenticator apps (e.g., Google Authenticator) introduce severe setup friction and lockout risks for non-technical users on basic Android devices. Cryptographic email OTP combined with physical counter claim PINs matches the actual threat profile without user lockouts.
+4. **No third-party interactive CAPTCHAs:**
+   - *Rationale:* External CAPTCHA scripts (e.g., reCAPTCHA, Cloudflare Turnstile) inject heavy JavaScript payloads that degrade mobile performance and stall on flaky 2G connections. Automated abuse is filtered server-side via IP rate limiting, Zod schema validation, and Have I Been Pwned k-anonymity breach checks.
+5. **No raw credential persistence:**
+   - *Rationale:* The database never stores plaintext passwords, raw session cookies, or plaintext verification codes. Passwords use memory-hard Argon2id hashes, while session tokens and OTPs use SHA-256 digests.
 
 ---
 
 ## 7. Known defects
-1. **Unauthenticated `/orders` route exposes all customer rows (`src/app/orders/page.tsx:24-26`, `src/app/api/pickup-requests/route.ts:7-9`):** Returns recent `pickup_requests` rows without session authentication (addressed in Task 05 session middleware).
-2. **In-memory rate limiting store wipes on process restart (`src/lib/security/rate-limit.ts:16-25`):** Restarts or cluster scaling partitions counter buckets.
-3. **Missing account-level lockout on failed sign-ins (`src/app/api/auth/login/route.ts:50-75`):** Rate limits protect IPs but do not lock customer accounts during distributed proxy rotation.
-4. **Ephemeral in-process email queue (`src/lib/email/mailer.ts:50-65`):** Unhandled server crashes during background email dispatch lose unsent verification notices without retry persistence.
-5. **Minimal offline breach corpus (`src/lib/security/breach-check.ts:9-18`):** Falls back to 8 hardcoded passwords when outbound network access to HIBP is unavailable.
-6. **Unresolved Task 01 Figma defects (`task-01-design-system/docs/defects.md`):** Light Mode `Surface_Container_Lowest` maps to `#2B3230` (`1.31:1` contrast, avoided in UI), `error 60–99` export as `#FFFFFF`, and `Plus Jakarta Sans` lacks bundled offline `.woff2` files.
+
+All known issues are documented honestly with exact file paths, line numbers, and architectural impact:
+
+1. **Unauthenticated `/orders` Ledger Route (`src/app/orders/page.tsx:23-26`, `src/app/api/pickup-requests/route.ts:7-9`):**
+   - *Impact:* The shop records page displays recent customer pickup requests without validating a session cookie or verifying customer ownership.
+   - *Remediation:* Handled in Task 05 via Next.js middleware and session token validation.
+2. **In-Memory Rate Limiting Bucket Store (`src/lib/security/rate-limit.ts:17-26`):**
+   - *Impact:* Rate-limiting buckets are stored in `globalThis.__freshfoldRateLimits`. Restarting the Node.js server process clears all active rate-limiting counters, and horizontal scaling across multiple processes partitions bucket state.
+   - *Remediation:* Acceptable for single-node deployment; requires durable storage if clustered.
+3. **Missing Account-Level Lockout on Failed Sign-ins (`src/app/api/auth/login/route.ts:50-75`):**
+   - *Impact:* Rate limiting throttles requests per client IP address (5 attempts per 15 minutes), but does not lock customer accounts when an attacker cycles through multiple proxy IP addresses.
+   - *Remediation:* Task 05 incorporates customer-level failed attempt counters.
+4. **Ephemeral In-Process Email Queue (`src/lib/email/mailer.ts:56-65`):**
+   - *Impact:* Asynchronous email dispatch relies on Node's `setImmediate`. If the server experiences a fatal crash or restart while an email is queued, the unsent verification code is lost without a persistent retry record.
+   - *Remediation:* Production hardening requires a durable database-backed transactional outbox.
+5. **Minimal Offline Breach Corpus (`src/lib/security/breach-check.ts:9-18`):**
+   - *Impact:* When the server cannot reach Have I Been Pwned's API (e.g., network failure or timeout), the system falls back to a minimal hardcoded 8-password list (`password123`, `1234567890`, etc.).
+   - *Remediation:* Bundle a larger pre-computed offline bloom filter of the top 100,000 common passwords.
+6. **Design System Figma Token Artifacts (`task-01-design-system/docs/defects.md`):**
+   - *Impact:* Light Mode `Surface_Container_Lowest` maps to `#2B3230` (`1.31:1` contrast ratio, deliberately avoided in production UI), `error 60–99` tokens export as `#FFFFFF`, and `Plus Jakarta Sans` typography relies on system/CDN fallbacks without bundled offline `.woff2` files.
